@@ -91,7 +91,7 @@ public class ReviewService {
     // 가게별 리뷰 조회
     public List<ReviewResponse> getReviewsByStoreId(Long storeId) {
         // storeId를 기준으로 리뷰 조회
-        List<Review> reviews = reviewRepository.findByStoreId(storeId);
+        List<Review> reviews = reviewRepository.findByStore_StoreId(storeId);
 
         // 리뷰 리스트를 ReviewResponse로 변환
         return reviews.stream()
@@ -110,7 +110,7 @@ public class ReviewService {
     // 가게별 별점 범위에 맞는 리뷰 조회
     public List<ReviewResponse> getReviewsByStoreIdAndRating(Long storeId, int minRating, int maxRating) {
         // storeId와 별점 범위를 기준으로 리뷰 조회
-        List<Review> reviews = reviewRepository.findByStoreIdAndRatingBetween(storeId, minRating, maxRating);
+        List<Review> reviews = reviewRepository.findByStore_StoreIdAndRatingBetween(storeId, minRating, maxRating);
 
         // 리뷰 리스트를 ReviewResponse로 변환
         return reviews.stream()
