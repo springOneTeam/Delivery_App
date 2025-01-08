@@ -1,4 +1,4 @@
-package com.example.outsourcingproject.domain.user.utils;
+package com.example.outsourcingproject.utils;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
