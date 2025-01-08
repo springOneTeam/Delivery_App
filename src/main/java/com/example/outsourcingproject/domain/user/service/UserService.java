@@ -6,6 +6,9 @@ import com.example.outsourcingproject.domain.user.dto.request.UserSignUpRequestD
 import com.example.outsourcingproject.domain.user.dto.response.UserSignUpResponseDto;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
+import com.example.outsourcingproject.exception.ErrorCode;
+import com.example.outsourcingproject.exception.common.BusinessException;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -42,4 +45,8 @@ public class UserService {
 		User.generateEmail(Email);
 	}
 
+	public User getUserById(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+	}
 }
