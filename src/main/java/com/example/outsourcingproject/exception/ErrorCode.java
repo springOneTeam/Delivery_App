@@ -28,6 +28,9 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "ERR301", "사용자를 찾을 수 없습니다."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "ERR300", "요청한 리소스를 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "ERR303", "댓글을 찾을 수 없습니다."),
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "ERR304", "가게를 찾을 수 없습니다."),
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "ERR305", "메뉴를 찾을 수 없습니다."),
+
 
     // 500 INTERNAL_SERVER_ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "ERR999", "서버 내부 오류가 발생했습니다.");
