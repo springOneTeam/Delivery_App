@@ -8,11 +8,12 @@ import com.example.outsourcingproject.domain.menu.dto.response.MenuResponseDto;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
 import com.example.outsourcingproject.domain.store.entity.Store;
+import com.example.outsourcingproject.domain.store.service.StoreService;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.enums.UserRoleEnum;
 import com.example.outsourcingproject.exception.auth.UnauthorizedException;
-import com.example.outsourcingproject.exception.common.NotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,7 +23,6 @@ public class MenuService {
 
 	private final MenuRepository menuRepository;
 	private final StoreService storeService;
-	private final UserService userService;
 
 	/**
 	 * 메뉴 생성
@@ -70,7 +70,7 @@ public class MenuService {
 
 	private Menu findMenuById(Long menuId) {
 		return menuRepository.findById(menuId)
-			.orElseThrow(() -> new NotFoundException("요청한 리소스를 찾을 수 없습니다."));
+			.orElseThrow(() -> new EntityNotFoundException("메뉴를 찾을 수 없습니다."));
 	}
 
 	private void validateOwnerAccess(Long userId, Store store) {

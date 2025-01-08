@@ -15,6 +15,7 @@ public enum ErrorCode {
     INVALID_JSON_FORMAT(HttpStatus.BAD_REQUEST, "ERR007", "잘못된 JSON 형식입니다."),
     INVALID_CONTENT_VALUE(HttpStatus.BAD_REQUEST, "ERR006", "댓글 내용이 올바르지 않습니다."),
     INVALID_CONTENT(HttpStatus.BAD_REQUEST, "ERR007", "가게가 올바르지 않습니다."),
+    INVALID_CONTENTS(HttpStatus.BAD_REQUEST, "ERR007", "가게조회가 올바르지 않습니다."),
 
     // 401 UNAUTHORIZED
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "ERR101", "인증이 필요한 접근입니다."),
