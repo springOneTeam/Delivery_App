@@ -9,29 +9,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@SecurityScheme(
-        name = "Bearer Authentication",
-        type = SecuritySchemeType.HTTP,
-        bearerFormat = "JWT",
-        scheme = "bearer"
-)
 public class SwaggerConfig {
-
     @Bean
     public OpenAPI openAPI() {
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList("Bearer Authentication");
-
         return new OpenAPI()
-                .info(new Info()
-                        .title("NewsFeed API")
-                        .description("NewsFeed API 명세서")
-                        .version("v1.0"))
-                .addSecurityItem(securityRequirement)
-                .components(new Components()
-                        .addSecuritySchemes("Bearer Authentication",
-                                new io.swagger.v3.oas.models.security.SecurityScheme()
-                                        .type(io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")));
+            .info(new Info()
+                .title("Delivery App API")  // 프로젝트에 맞게 수정
+                .description("Delivery App API Documentation")  // 프로젝트에 맞게 수정
+                .version("v1.0.0"))
+            .components(new Components());
     }
 }
