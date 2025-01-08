@@ -1,5 +1,7 @@
 package com.example.outsourcingproject.domain.order.service;
 
+import java.time.LocalTime;
+
 import org.springframework.stereotype.Service;
 
 import com.example.outsourcingproject.domain.menu.entity.Menu;
@@ -37,19 +39,15 @@ public class OrderService {
 		Menu menu = findMenuByIdOrElseThrow(createOrderRequestDto.menuId());
 		User user = findUserByIdOrElseThrow(userId);
 
-		// 주문 조건 불만족
-		if(menu.getPrice()<store.getMinOrderAmount()){
-			throw new BusinessException(ErrorCode.INVALID_TOTALAMOUNT);
-		}
-		/*if(){
-			throw new BusinessException(ErrorCode.INVALID_ORDER_TIME);
-		}*/
+		checkMinOrderAmount(store, menu.getPrice());
+		checkOrderTimeWithinOperatingHours(store);
 
 		// 주문 생성 시 일단 보류 상태로 표시
 		Order order = new Order(user, store, menu, OrderStatus.PENDING, 1);
 
 		Order saveOrder=orderRepository.save(order);
 	}
+
 
 	/* 예외처리 */
 	private Store findStoreByIdOrElseThrow(Long storeId) {
@@ -67,5 +65,17 @@ public class OrderService {
 			.orElseThrow(UserNotFoundException::new);
 	}
 
+	private static void checkOrderTimeWithinOperatingHours(Store store) {
+		LocalTime orderTime=LocalTime.now();
 
+		if(orderTime.isBefore(store.getOpenTime()) || orderTime.isAfter(store.getCloseTime())){
+			throw new BusinessException(ErrorCode.INVALID_ORDER_TIME);
+		}
+	}
+
+	private static void checkMinOrderAmount(Store store, int totalAmount) {
+		if (totalAmount< store.getMinOrderAmount()) {
+			throw new BusinessException(ErrorCode.INVALID_TOTALAMOUNT);
+		}
+	}
 }
