@@ -62,12 +62,12 @@ public class Order {
 	@Column(updatable = false)
 	private LocalDateTime ordertime;
 
-	public Order(User user, Store store, Menu menu, OrderStatus orderStatus, int cart, int totalAmount){
+	public Order(User user, Store store, Menu menu, OrderStatus orderStatus, int cart){
 		this.user=user;
 		this.store=store;
 		this.menu=menu;
 		this.orderStatus=orderStatus;
 		this.cart=cart;
-		this.totalAmount=totalAmount;
+		this.totalAmount= menu.getPrice();
 	}
 }
