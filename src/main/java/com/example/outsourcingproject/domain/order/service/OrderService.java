@@ -43,7 +43,7 @@ public class OrderService {
 		checkOrderTimeWithinOperatingHours(store);
 
 		// 주문 생성 시 일단 보류 상태로 표시
-		Order order = new Order(user, store, menu, OrderStatus.PENDING, 1);
+		Order order = new Order(user, store, menu, OrderStatus.PENDING, createOrderRequestDto.cart());
 
 		Order saveOrder=orderRepository.save(order);
 	}
