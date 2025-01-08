@@ -27,7 +27,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final OrderRepository orderRepository;  // OrderRepository 주입
-    //private final UserService userService; // 유저 서비스
+    private final UserService userService; // 유저 서비스
     private final StoreService storeService; // 가게 서비스
 
     // 주문을 ID로 찾는 메서드
@@ -59,7 +59,7 @@ public class ReviewService {
         // 주문에 연결된 가게 ID 가져오기
         Long storeId = findOrderByIdOrElseThrow(reviewRequest.orderId()).getStore().getStoreId();
         Order order = findOrderByIdOrElseThrow(reviewRequest.orderId());
-        User user = userService.findUserById(userId);
+        User user = userService.getUserById(userId);
 
         // Review 엔티티 생성
 
