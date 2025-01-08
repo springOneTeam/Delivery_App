@@ -10,7 +10,9 @@ import com.example.outsourcingproject.domain.store.repository.StoreRepository;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.enums.UserRoleEnum;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
+import com.example.outsourcingproject.exception.ErrorCode;
 import com.example.outsourcingproject.exception.auth.UnauthorizedException;
+import com.example.outsourcingproject.exception.common.BusinessException;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,43 +21,32 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StoreService {
-	private static final int MAX_STORES_PER_OWNER = 3;
-
 	private final StoreRepository storeRepository;
 	private final UserRepository userRepository;
 
-	@Transactional
-	public StoreCreateResponseDto createStore(Long userId, StoreCreateRequestDto requestDto) {
+	private static final int MAX_STORES_PER_OWNER = 3;
+
+	public StoreCreateResponseDto createStore(StoreCreateRequestDto requestDto, Long userId) {
 		// 사용자 조회
-		User owner = userRepository.findById(userId)
-			.orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-		// 사장님 권한 확인
-		validateOwnerRole(owner);
+		// 가게 개수 체크
+		validateStoreCount(user);
 
-		// 가게 개수 제한 확인
-		validateStoreCount(owner);
-
-		// 가게 생성
-		Store store = requestDto.toEntity(owner);
+		// 가게 생성 - 여기서 자동으로 OWNER 권한 체크됨 (DTO의 팩토리 메서드에서)
+		Store store = StoreCreateRequestDto.toEntity(requestDto, user);
 		Store savedStore = storeRepository.save(store);
 
-		return StoreCreateResponseDto.of(savedStore);
-	}
-
-	private void validateOwnerRole(User user) {
-		if (user.getRole() != UserRoleEnum.OWNER) {  // UserRole -> UserRoleEnum으로 변경
-			throw new UnauthorizedException("사장님만 가게를 등록할 수 있습니다.");
-		}
+		return StoreCreateResponseDto.from(savedStore);
 	}
 
 	private void validateStoreCount(User owner) {
-		int activeStoresCount = storeRepository.countActiveStoresByOwner(owner);
-		if (activeStoresCount >= MAX_STORES_PER_OWNER) {
-			throw new IllegalStateException("사장님당 최대 " + MAX_STORES_PER_OWNER + "개의 가게만 등록할 수 있습니다.");
+		long storeCount = storeRepository.countByOwner(owner);
+		if (storeCount >= MAX_STORES_PER_OWNER) {
+			throw new BusinessException(ErrorCode.INVALID_ACCESS, "가게는 최대 3개까지만 등록 가능합니다.");
 		}
 	}
-
 	public Store findStoreById(Long storeId) {
 		return storeRepository.findById(storeId)
 			.orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));

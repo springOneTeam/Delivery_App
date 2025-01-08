@@ -66,16 +66,9 @@ public class Store {
 
 
 	@Builder
-	private Store(
-		User owner,
-		String storeName,
-		String tel,
-		String address,
-		LocalTime openTime,
-		LocalTime closeTime,
-		int minOrderAmount,
-		boolean isOperating
-	) {
+	public Store(User owner, String storeName, String tel, String address,
+		LocalTime openTime, LocalTime closeTime, int minOrderAmount,
+		boolean isOperating) {
 		this.owner = owner;
 		this.storeName = storeName;
 		this.tel = tel;
@@ -84,16 +77,5 @@ public class Store {
 		this.closeTime = closeTime;
 		this.minOrderAmount = minOrderAmount;
 		this.isOperating = isOperating;
-	}
-
-	// 비즈니스 로직
-	public void validateOwner(User user) {
-		if (!this.owner.equals(user)) {
-			throw new IllegalArgumentException("해당 가게의 사장님이 아닙니다.");
-		}
-	}
-
-	public void closeStore() {
-		this.isOperating = false;
 	}
 }

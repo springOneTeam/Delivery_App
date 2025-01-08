@@ -13,7 +13,7 @@ public record StoreCreateResponseDto(
 	int minOrderAmount,
 	boolean isOperating
 ) {
-	public static StoreCreateResponseDto of(Store store) {
+	public static StoreCreateResponseDto from(Store store) {
 		return new StoreCreateResponseDto(
 			store.getStoreId(),
 			store.getStoreName(),
