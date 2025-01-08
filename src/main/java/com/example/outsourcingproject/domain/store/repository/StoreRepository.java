@@ -10,6 +10,5 @@ import com.example.outsourcingproject.domain.user.entity.User;
 
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
-	@Query("SELECT COUNT(s) FROM Store s WHERE s.owner = :owner AND s.isOperating = true")
-	int countActiveStoresByOwner(@Param("owner") User owner);
+	long countByOwner(User owner);
 }
