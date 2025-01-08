@@ -1,14 +1,20 @@
 package com.example.outsourcingproject.domain.review.service;
 
+import com.example.outsourcingproject.domain.order.entity.Order;
+import com.example.outsourcingproject.domain.order.repository.OrderRepository;
 import com.example.outsourcingproject.domain.review.dto.ReviewRequest;
 import com.example.outsourcingproject.domain.review.dto.ReviewResponse;
 import com.example.outsourcingproject.domain.review.entity.Review;
 import com.example.outsourcingproject.domain.review.repository.ReviewRepository;
 import com.example.outsourcingproject.domain.store.service.StoreService;
+import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.service.UserService;
 import com.example.outsourcingproject.domain.order.service.OrderService;
-
+import com.example.outsourcingproject.exception.ErrorCode;
+import com.example.outsourcingproject.exception.GlobalExceptionHandler;
+import com.example.outsourcingproject.exception.common.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,55 +26,69 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final UserService userService; // 유저 서비스
-    private final OrderService orderService; // 주문 서비스
+    private final OrderRepository orderRepository;  // OrderRepository 주입
+    //private final UserService userService; // 유저 서비스
     private final StoreService storeService; // 가게 서비스
 
-    public ReviewService(
-            ReviewRepository reviewRepository,
-            UserService userService,
-            OrderService orderService,
-            StoreService storeService) {
-        this.reviewRepository = reviewRepository;
-        this.userService = userService;
-        this.orderService = orderService;
-        this.storeService = storeService;
+    // 주문을 ID로 찾는 메서드
+    private Order findOrderByIdOrElseThrow(Long orderId) {
+        return orderRepository.findById(orderId)
+               .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS, "주문을 찾을 수 없습니다. ID: " + orderId));
     }
 
-    public ReviewResponse createReview(ReviewRequest reviewRequest, Long userId) {
-        // 필요한 데이터 유효성 검증
-        orderService.validateOrder(reviewRequest.orderId()); // 주문 존재 여부 확인
-        if (!orderService.isOrderCompleted(reviewRequest.orderId())) {
-            throw new IllegalArgumentException("주문이 완료된 상태에서만 리뷰를 작성할 수 있습니다.");
+    // 주문 검증 메서드: 주문 상태가 'COMPLETED'여야 하고, 작성자는 본인만
+    private void validateOrder(Long orderId, Long userId) {
+        Order order = findOrderByIdOrElseThrow(orderId);
+
+        // 주문 상태가 'COMPLETED'여야만 리뷰를 작성할 수 있음
+        //if (!order.getOrderStatus().equals("COMPLETED")) {
+        //    throw new BusinessException(ErrorCode.ORDER_NOT_COMPLETED, "주문이 완료되지 않았습니다.");
+        //}
+
+        // 주문한 유저만 리뷰를 작성할 수 있음
+        if (!order.getUser().getUserId().equals(userId)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS, "본인의 주문만 리뷰를 작성할 수 있습니다.");
         }
-        Long storeId = orderService.findStoreIdByOrderId(reviewRequest.orderId()); // 주문에 연결된 가게 ID 가져오기
-        userService.validateUser(userId); // 사용자 존재 여부 확인
+    }
+
+    // 리뷰 생성 메서드
+    public ReviewResponse createReview(ReviewRequest reviewRequest, Long userId) {
+        // 주문 유효성 검증
+        validateOrder(reviewRequest.orderId(), userId);
+
+        // 주문에 연결된 가게 ID 가져오기
+        Long storeId = findOrderByIdOrElseThrow(reviewRequest.orderId()).getStore().getStoreId();
+        Order order = findOrderByIdOrElseThrow(reviewRequest.orderId());
+        User user = userService.findUserById(userId);
 
         // Review 엔티티 생성
+
         Review review = new Review(
-                null, // reviewId는 자동 생성
-                reviewRequest.orderId(),
-                userId,
-                storeId,
+                null, // reviewId는 자동 생성됨
+                order, // Order 객체 전달
+                user,  // User 객체 전달
+                order.getStore(), // 주문에 연결된 가게 가져오기
                 reviewRequest.rating(),
                 reviewRequest.content(),
                 LocalDateTime.now()
         );
 
-        // 저장
+        // 리뷰 저장
         Review savedReview = reviewRepository.save(review);
 
         // 응답 객체 생성
         return new ReviewResponse(
                 savedReview.getReviewId(),
-                savedReview.getOrderId(),
-                savedReview.getUserId(),
-                savedReview.getStoreId(),
+                savedReview.getOrder().getOrderId(),
+                savedReview.getUser().getUserId(),
+                savedReview.getStore().getStoreId(),
                 savedReview.getRating(),
                 savedReview.getContent(),
                 savedReview.getCreatedAt()
         );
     }
+
+    // 가게별 리뷰 조회
     public List<ReviewResponse> getReviewsByStoreId(Long storeId) {
         // storeId를 기준으로 리뷰 조회
         List<Review> reviews = reviewRepository.findByStoreId(storeId);
@@ -77,9 +97,9 @@ public class ReviewService {
         return reviews.stream()
                 .map(review -> new ReviewResponse(
                         review.getReviewId(),
-                        review.getOrderId(),
-                        review.getUserId(),
-                        review.getStoreId(),
+                        review.getOrder().getOrderId(),
+                        review.getUser().getUserId(),
+                        review.getStore().getStoreId(),
                         review.getRating(),
                         review.getContent(),
                         review.getCreatedAt()
@@ -87,6 +107,7 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
+    // 가게별 별점 범위에 맞는 리뷰 조회
     public List<ReviewResponse> getReviewsByStoreIdAndRating(Long storeId, int minRating, int maxRating) {
         // storeId와 별점 범위를 기준으로 리뷰 조회
         List<Review> reviews = reviewRepository.findByStoreIdAndRatingBetween(storeId, minRating, maxRating);
@@ -95,17 +116,13 @@ public class ReviewService {
         return reviews.stream()
                 .map(review -> new ReviewResponse(
                         review.getReviewId(),
-                        review.getOrderId(),
-                        review.getUserId(),
-                        review.getStoreId(),
+                        review.getOrder().getOrderId(),
+                        review.getUser().getUserId(),
+                        review.getStore().getStoreId(),
                         review.getRating(),
                         review.getContent(),
                         review.getCreatedAt()
                 ))
                 .collect(Collectors.toList());
     }
-
-
-
-
 }
