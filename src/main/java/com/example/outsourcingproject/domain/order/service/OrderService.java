@@ -12,7 +12,9 @@ import com.example.outsourcingproject.domain.store.entity.Store;
 import com.example.outsourcingproject.domain.store.repository.StoreRepository;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
+import com.example.outsourcingproject.exception.ErrorCode;
 import com.example.outsourcingproject.exception.GlobalExceptionHandler;
+import com.example.outsourcingproject.exception.common.BusinessException;
 import com.example.outsourcingproject.exception.common.MenuNotFoundException;
 import com.example.outsourcingproject.exception.common.StoreNotFoundException;
 import com.example.outsourcingproject.exception.common.UserNotFoundException;
@@ -35,6 +37,14 @@ public class OrderService {
 		Menu menu = findMenuByIdOrElseThrow(createOrderRequestDto.menuId());
 		User user = findUserByIdOrElseThrow(userId);
 
+		// 주문 조건 불만족
+		if(menu.getPrice()<store.getMinOrderAmount()){
+			throw new BusinessException(ErrorCode.INVALID_TOTALAMOUNT);
+		}
+		/*if(){
+			throw new BusinessException(ErrorCode.INVALID_ORDER_TIME);
+		}*/
+
 		// 주문 생성 시 일단 보류 상태로 표시
 		Order order = new Order(user, store, menu, OrderStatus.PENDING, 1);
 
@@ -56,4 +66,6 @@ public class OrderService {
 		return userRepository.findById(userId)
 			.orElseThrow(UserNotFoundException::new);
 	}
+
+
 }
