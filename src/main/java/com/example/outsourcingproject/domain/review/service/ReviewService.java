@@ -4,6 +4,9 @@ import com.example.outsourcingproject.domain.review.dto.ReviewRequest;
 import com.example.outsourcingproject.domain.review.dto.ReviewResponse;
 import com.example.outsourcingproject.domain.review.entity.Review;
 import com.example.outsourcingproject.domain.review.repository.ReviewRepository;
+import com.example.outsourcingproject.domain.store.service.StoreService;
+import com.example.outsourcingproject.domain.user.service.UserService;
+import com.example.outsourcingproject.domain.order.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
