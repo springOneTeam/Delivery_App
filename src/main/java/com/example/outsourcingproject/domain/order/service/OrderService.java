@@ -1,15 +1,21 @@
 package com.example.outsourcingproject.domain.order.service;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
+import com.example.outsourcingproject.domain.menu.entity.Menu;
+import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
 import com.example.outsourcingproject.domain.order.dto.CreateOrderRequestDto;
 import com.example.outsourcingproject.domain.order.entity.Order;
+import com.example.outsourcingproject.domain.order.enums.OrderStatus;
 import com.example.outsourcingproject.domain.order.repository.OrderRepository;
 import com.example.outsourcingproject.domain.store.entity.Store;
 import com.example.outsourcingproject.domain.store.repository.StoreRepository;
+import com.example.outsourcingproject.domain.user.entity.User;
+import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.exception.GlobalExceptionHandler;
+import com.example.outsourcingproject.exception.common.MenuNotFoundException;
+import com.example.outsourcingproject.exception.common.StoreNotFoundException;
+import com.example.outsourcingproject.exception.common.UserNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,14 +25,34 @@ public class OrderService {
 
 	private final OrderRepository orderRepository;
 	private final StoreRepository storeRepository;
+	private final MenuRepository menuRepository;
+	private final UserRepository userRepository;
 	private final GlobalExceptionHandler globalExceptionHandler;
 
+	// 주문 생성
 	public void createOrder(Long userId, CreateOrderRequestDto createOrderRequestDto) {
-		/*Todo 예외처리 수정 예정*/
-		Store store = storeRepository.findById(createOrderRequestDto.storeId())
-			.orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
-		/*Todo menu 추가 예정*/
-		Order order = new Order();
+		Store store = findStoreByIdOrElseThrow(createOrderRequestDto.storeId());
+		Menu menu = findMenuByIdOrElseThrow(createOrderRequestDto.menuId());
+		User user = findUserByIdOrElseThrow(userId);
+
+		Order order = new Order(user, store, menu, OrderStatus.ACCEPTED, 1);
+
 		Order saveOrder=orderRepository.save(order);
+	}
+
+	/* 예외처리 */
+	private Store findStoreByIdOrElseThrow(Long storeId) {
+		return storeRepository.findById(storeId)
+			.orElseThrow(StoreNotFoundException::new);
+	}
+
+	private Menu findMenuByIdOrElseThrow(Long menuId){
+		return menuRepository.findById(menuId)
+			.orElseThrow(MenuNotFoundException::new);
+	}
+
+	private User findUserByIdOrElseThrow(Long userId){
+		return userRepository.findById(userId)
+			.orElseThrow(UserNotFoundException::new);
 	}
 }
