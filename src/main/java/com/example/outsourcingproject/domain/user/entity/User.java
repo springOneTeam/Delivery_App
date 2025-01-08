@@ -3,7 +3,7 @@ package com.example.outsourcingproject.domain.user.entity;
 import java.util.regex.Pattern;
 
 import com.example.outsourcingproject.domain.user.enums.UserRoleEnum;
-import com.example.outsourcingproject.domain.user.utils.BCrypUtil;
+import com.example.outsourcingproject.utils.BCrypUtil;
 import com.example.outsourcingproject.exception.ErrorCode;
 import com.example.outsourcingproject.exception.common.BusinessException;
 
@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 
 @Getter
-@Table(name = "user")
+@Table(name = "users")
 @Entity
 public class User {
 
