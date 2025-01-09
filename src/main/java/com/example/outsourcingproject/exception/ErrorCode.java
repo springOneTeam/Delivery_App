@@ -16,6 +16,7 @@ public enum ErrorCode {
     INVALID_CONTENT_VALUE(HttpStatus.BAD_REQUEST, "ERR006", "댓글 내용이 올바르지 않습니다."),
     INVALID_CONTENT(HttpStatus.BAD_REQUEST, "ERR007", "가게가 올바르지 않습니다."),
     INVALID_CONTENTS(HttpStatus.BAD_REQUEST, "ERR007", "가게조회가 올바르지 않습니다."),
+    ORDER_NOT_DELIVERED(HttpStatus.BAD_REQUEST,"ERR008","완료되지 않은 주문입니다."),
 
     // 401 UNAUTHORIZED
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "ERR101", "인증이 필요한 접근입니다."),
@@ -30,6 +31,7 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "ERR303", "댓글을 찾을 수 없습니다."),
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "ERR304", "가게를 찾을 수 없습니다."),
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "ERR305", "메뉴를 찾을 수 없습니다."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "ERR306", "주문을 찾을 수 없습니다."),
 
 
     // 500 INTERNAL_SERVER_ERROR
