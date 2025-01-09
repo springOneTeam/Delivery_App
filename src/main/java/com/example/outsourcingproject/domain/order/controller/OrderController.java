@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.outsourcingproject.common.ApiResponse;
 import com.example.outsourcingproject.domain.order.dto.CreateOrderRequestDto;
 import com.example.outsourcingproject.domain.order.dto.CreateOrderResponseDto;
 import com.example.outsourcingproject.domain.order.service.OrderService;
@@ -22,12 +23,12 @@ public class OrderController {
 	private final OrderService orderService;
 
 	@PostMapping
-	public ResponseEntity<CreateOrderResponseDto> creatOrder(
+	public ResponseEntity<ApiResponse<CreateOrderResponseDto>> creatOrder(
 		HttpServletRequest request,
 		@RequestBody CreateOrderRequestDto createOrderRequestDto
-	){
-		Long userId=(Long)request.getAttribute("userId");
+	) {
+		Long userId = (Long)request.getAttribute("userId");
 		orderService.createOrder(userId, createOrderRequestDto);
-		return new ResponseEntity<>(new CreateOrderResponseDto("음식을 주문했습니다."), HttpStatus.OK);
+		return new ResponseEntity<>(ApiResponse.success("음식을 주문했습니다."), HttpStatus.CREATED);
 	}
 }
