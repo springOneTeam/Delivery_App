@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.outsourcingproject.common.ApiResponse;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestDto;
+import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestWithUserDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateResponseDto;
 import com.example.outsourcingproject.domain.store.service.StoreService;
 import com.example.outsourcingproject.domain.user.entity.User;
@@ -31,21 +32,19 @@ public class StoreController {
 
 	private final StoreService storeService;
 	private final UserService userService;
-
 	@PostMapping
 	public ResponseEntity<ApiResponse<StoreCreateResponseDto>> createStore(
-		@AuthenticationPrincipal Long userId,
-		@Valid @RequestBody StoreCreateRequestDto requestDto
+		@Valid @RequestBody StoreCreateRequestWithUserDto requestDto  // DTO 수정
 	) {
 		// User 엔티티로 사용자 조회
-		User user = userService.getUserById(userId);  // findById -> getUserById로 메서드명 변경
+		User user = userService.getUserById(requestDto.userId());  // userId를 DTO에서 가져옴
 
 		if (user.getRole() != UserRoleEnum.OWNER) {
 			throw new UnauthorizedException("사장님만 가게를 등록할 수 있습니다.");
 		}
 
-		// StoreService의 createStore 메서드 시그니처와 일치하도록 수정
-		StoreCreateResponseDto responseDto = storeService.createStore(requestDto, userId);
+		// StoreService의 createStore 메서드 호출
+		StoreCreateResponseDto responseDto = storeService.createStore(requestDto.toStoreCreateRequestDto(), requestDto.userId());
 
 		ApiResponse<StoreCreateResponseDto> response = ApiResponse.success(
 			"가게가 성공적으로 등록되었습니다.",
