@@ -1,5 +1,6 @@
 package com.example.outsourcingproject.utils;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,12 +20,12 @@ public class JwtUtil {
 
 	private final SecretKey key;
 
-	@Value("$(jwt.expiration}")
+	@Value("${jwt.expiration}")
 	private long expiration;
 
-	// 1. SecretKey 를 생성자에서 초기화
-	public JwtUtil(@Value("{secret-key}") String key) {
-		this.key = Keys.hmacShaKeyFor(key.getBytes());
+	//1. SecretKey 를 생성자에서 초기화
+	public JwtUtil(@Value("${secret-key}") String base64Key) {
+		this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64Key));
 	}
 
 	// 2. JWT 토큰 생성
