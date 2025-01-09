@@ -8,6 +8,7 @@ import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.exception.ErrorCode;
 import com.example.outsourcingproject.exception.common.BusinessException;
+import com.example.outsourcingproject.utils.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final JwtUtil jwtUtil;
 
 	/**
 	 * TODO :: 추후 토큰 생성 후 반환
@@ -29,7 +31,7 @@ public class UserService {
 		// 비즈니스 규칙: 비밀번호 형식 검증
 		User.validatePassword(requestDto.password());
 
-		// 비밀번호 암호화 - 이 부분 수정
+		// 비밀번호 암호화
 		String encryptedPassword = User.generateEncryptedPassword(requestDto.password());
 
 		// 새 유저 생성
@@ -37,7 +39,9 @@ public class UserService {
 
 		User savedUser = userRepository.save(newUser);
 
-		return UserSignUpResponseDto.toDto(savedUser.getRole());
+		String generatedToken = jwtUtil.generateToken(savedUser.getUserId(), savedUser.getRole().toString());
+
+		return UserSignUpResponseDto.toDto(savedUser.getRole(), generatedToken);
 	}
 
 
