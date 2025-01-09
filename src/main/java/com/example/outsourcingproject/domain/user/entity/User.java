@@ -24,7 +24,8 @@ public class User {
 
 	private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 	private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
-	private static final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+	private static final Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
+	private static final Pattern passwordPattern = Pattern.compile(PASSWORD_PATTERN);
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,20 +79,20 @@ public class User {
 
 	// 이메일 형식 검증
 	private static boolean validateEmail(String email) {
-		return pattern.matcher(email).matches();
+		return emailPattern.matcher(email).matches();
 	}
 
 	// 비밀번호 형식 검증
 	public static void validatePassword(String password) {
-		if (!pattern.matcher(password).matches()) {
+		if (!passwordPattern.matcher(password).matches()) {
 			throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE,
-				"Password must contain at least 8 charactoers, including uppercase, lowercase, number, and special character.");
+				"Password must contain at least 8 characters, including uppercase, lowercase, number, and special character.");
 		}
 	}
 
 	// 비밀번호 암호화
-	public static User generateEncryptedPassword(String rawPassword) {
-		return new User(BCrypUtil.encrypt(rawPassword));
+	public static String generateEncryptedPassword(String rawPassword) {
+		return BCrypUtil.encrypt(rawPassword);
 	}
 
 }

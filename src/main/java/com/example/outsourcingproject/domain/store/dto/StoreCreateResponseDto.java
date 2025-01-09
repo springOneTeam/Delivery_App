@@ -8,8 +8,8 @@ public record StoreCreateResponseDto(
 	String storeName,
 	String tel,
 	String address,
-	LocalTime openTime,
-	LocalTime closeTime,
+	String openTime,
+	String closeTime,
 	int minOrderAmount,
 	boolean isOperating
 ) {
