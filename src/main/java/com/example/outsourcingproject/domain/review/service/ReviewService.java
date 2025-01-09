@@ -93,7 +93,7 @@ public class ReviewService {
     // 가게별 리뷰 조회
     public List<ReviewResponse> getReviewsByStoreId(Long storeId) {
         // storeId를 기준으로 리뷰 조회
-        List<Review> reviews = reviewRepository.findByStoreIdOrderByCreatedAtDesc(storeId);
+        List<Review> reviews = reviewRepository.findByStore_StoreIdOrderByCreatedAtDesc(storeId);
 
         // 리뷰 리스트를 ReviewResponse로 변환
         return reviews.stream()
