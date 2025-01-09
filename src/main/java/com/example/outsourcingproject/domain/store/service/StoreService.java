@@ -26,6 +26,7 @@ public class StoreService {
 
 	private static final int MAX_STORES_PER_OWNER = 3;
 
+	@Transactional  // 여기에 별도로 Transactional 추가 (readOnly = false가 기본값)
 	public StoreCreateResponseDto createStore(StoreCreateRequestDto requestDto, Long userId) {
 		// 사용자 조회
 		User user = userRepository.findById(userId)
@@ -34,7 +35,7 @@ public class StoreService {
 		// 가게 개수 체크
 		validateStoreCount(user);
 
-		// 가게 생성 - 여기서 자동으로 OWNER 권한 체크됨 (DTO의 팩토리 메서드에서)
+		// 가게 생성
 		Store store = StoreCreateRequestDto.toEntity(requestDto, user);
 		Store savedStore = storeRepository.save(store);
 
