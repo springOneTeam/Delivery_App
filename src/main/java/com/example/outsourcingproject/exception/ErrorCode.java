@@ -13,12 +13,12 @@ public enum ErrorCode {
     WRONG_CREDENTIALS(HttpStatus.BAD_REQUEST, "ERR005", "인증 정보가 올바르지 않습니다."),
     INVALID_ACCESS(HttpStatus.BAD_REQUEST, "ERR006", "잘못된 접근입니다."),
     INVALID_JSON_FORMAT(HttpStatus.BAD_REQUEST, "ERR007", "잘못된 JSON 형식입니다."),
-    INVALID_CONTENT_VALUE(HttpStatus.BAD_REQUEST, "ERR006", "댓글 내용이 올바르지 않습니다."),
-    INVALID_CONTENT(HttpStatus.BAD_REQUEST, "ERR007", "가게가 올바르지 않습니다."),
-    INVALID_CONTENTS(HttpStatus.BAD_REQUEST, "ERR007", "가게조회가 올바르지 않습니다."),
-    INVALID_TOTALAMOUNT(HttpStatus.BAD_REQUEST,"ERR008", "최소 주문 금액을 만족해야합니다."),
-    INVALID_ORDER_TIME(HttpStatus.BAD_REQUEST, "ERR009", "지금은 가게 운영 시간이 아닙니다."),
-    ORDER_NOT_DELIVERED(HttpStatus.BAD_REQUEST,"ERR008","완료되지 않은 주문입니다."),
+    INVALID_CONTENT_VALUE(HttpStatus.BAD_REQUEST, "ERR008", "댓글 내용이 올바르지 않습니다."),
+    INVALID_CONTENT(HttpStatus.BAD_REQUEST, "ERR009", "가게가 올바르지 않습니다."),
+    INVALID_CONTENTS(HttpStatus.BAD_REQUEST, "ERR010", "가게조회가 올바르지 않습니다."),
+    INVALID_TOTALAMOUNT(HttpStatus.BAD_REQUEST,"ERR011", "최소 주문 금액을 만족해야합니다."),
+    INVALID_ORDER_TIME(HttpStatus.BAD_REQUEST, "ERR012", "지금은 가게 운영 시간이 아닙니다."),
+    ORDER_NOT_DELIVERED(HttpStatus.BAD_REQUEST,"ERR013","완료되지 않은 주문입니다."),
 
     // 401 UNAUTHORIZED
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "ERR101", "인증이 필요한 접근입니다."),
