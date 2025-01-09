@@ -44,7 +44,7 @@ public class User {
 	@Enumerated(value = EnumType.STRING)
 	private UserRoleEnum role;
 
-	private Boolean isDeleted = false;
+	private final Boolean isDeleted = false;
 
 	public User() {
 	}

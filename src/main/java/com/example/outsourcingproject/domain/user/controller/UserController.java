@@ -23,7 +23,7 @@ public class UserController {
 	private final UserService userService;
 
 	// 회원가입
-	@PostMapping("/signUp")
+	@PostMapping("/signup")
 	public ResponseEntity<ApiResponse<UserSignUpResponseDto>> singUpUser(
 		@Valid @RequestBody UserSignUpRequestDto requestDto) {
 
