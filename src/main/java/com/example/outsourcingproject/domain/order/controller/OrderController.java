@@ -2,6 +2,8 @@ package com.example.outsourcingproject.domain.order.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,9 +16,11 @@ import com.example.outsourcingproject.domain.order.dto.ChangeOrderStatusRequestD
 import com.example.outsourcingproject.domain.order.dto.ChangeOrderStatusResponseDto;
 import com.example.outsourcingproject.domain.order.dto.CreateOrderRequestDto;
 import com.example.outsourcingproject.domain.order.dto.CreateOrderResponseDto;
+import com.example.outsourcingproject.domain.order.dto.OrderListResponseDto;
 import com.example.outsourcingproject.domain.order.service.OrderService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,7 +34,7 @@ public class OrderController {
 	@PostMapping
 	public ResponseEntity<ApiResponse<CreateOrderResponseDto>> creatOrder(
 		HttpServletRequest request,
-		@RequestBody CreateOrderRequestDto createOrderRequestDto
+		@Valid @RequestBody CreateOrderRequestDto createOrderRequestDto
 	) {
 		Long userId = (Long)request.getAttribute("userId");
 		orderService.createOrder(userId, createOrderRequestDto);
@@ -43,13 +47,24 @@ public class OrderController {
 	public ResponseEntity<ApiResponse<ChangeOrderStatusResponseDto>> updateOrderStatus(
 		HttpServletRequest request,
 		@PathVariable Long orderId,
-		@RequestBody ChangeOrderStatusRequestDto requestDto
+		@Valid @RequestBody ChangeOrderStatusRequestDto requestDto
 	) {
 		Long userId = (Long)request.getAttribute("userId");
 		ChangeOrderStatusResponseDto responseDto = orderService.updateOrderStatus(userId, orderId, requestDto);
 
 		return new ResponseEntity<>(
-			ApiResponse.success("주문상태를 변경했습니다.", responseDto),
-			HttpStatus.OK);
+			ApiResponse.success("주문상태를 변경했습니다.", responseDto), HttpStatus.OK);
+	}
+
+	// 주문 내역 조회
+	@GetMapping
+	public ResponseEntity<ApiResponse<OrderListResponseDto>> findAllOrders(
+		HttpServletRequest request
+	) {
+		Long userId = (Long)request.getAttribute("userId");
+		OrderListResponseDto responseDto = orderService.findAllOrders(userId);
+
+		return new ResponseEntity<>(
+			ApiResponse.success("주문 내역:", responseDto), HttpStatus.OK);
 	}
 }
