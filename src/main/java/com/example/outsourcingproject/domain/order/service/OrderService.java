@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
+import com.example.outsourcingproject.domain.order.dto.ChangeOrderStatusRequestDto;
+import com.example.outsourcingproject.domain.order.dto.ChangeOrderStatusResponseDto;
 import com.example.outsourcingproject.domain.order.dto.CreateOrderRequestDto;
 import com.example.outsourcingproject.domain.order.entity.Order;
 import com.example.outsourcingproject.domain.order.enums.OrderStatus;
@@ -15,14 +17,17 @@ import com.example.outsourcingproject.domain.order.repository.OrderRepository;
 import com.example.outsourcingproject.domain.store.entity.Store;
 import com.example.outsourcingproject.domain.store.repository.StoreRepository;
 import com.example.outsourcingproject.domain.user.entity.User;
+import com.example.outsourcingproject.domain.user.enums.UserRoleEnum;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.exception.ErrorCode;
 import com.example.outsourcingproject.exception.GlobalExceptionHandler;
 import com.example.outsourcingproject.exception.common.BusinessException;
 import com.example.outsourcingproject.exception.common.MenuNotFoundException;
+import com.example.outsourcingproject.exception.common.OrderNotFoundException;
 import com.example.outsourcingproject.exception.common.StoreNotFoundException;
 import com.example.outsourcingproject.exception.common.UserNotFoundException;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -36,18 +41,31 @@ public class OrderService {
 	private final GlobalExceptionHandler globalExceptionHandler;
 
 	// 주문 생성
-	public void createOrder(Long userId, CreateOrderRequestDto createOrderRequestDto) {
-		Store store = findStoreByIdOrElseThrow(createOrderRequestDto.storeId());
-		Menu menu = findMenuByIdOrElseThrow(createOrderRequestDto.menuId());
+	public void createOrder(Long userId, CreateOrderRequestDto dto) {
+		Store store = findStoreByIdOrElseThrow(dto.storeId());
+		Menu menu = findMenuByIdOrElseThrow(dto.menuId());
 		User user = findUserByIdOrElseThrow(userId);
 
 		checkMinOrderAmount(store, menu.getPrice());
 		checkOrderTimeWithinOperatingHours(store);
 
-		// 주문 생성 시 일단 보류 상태로 표시
-		Order order = new Order(user, store, menu, OrderStatus.PENDING, createOrderRequestDto.cart());
+		Order order = new Order(user, store, menu, OrderStatus.PENDING, dto.cart());
 
 		Order saveOrder = orderRepository.save(order);
+	}
+
+	// 주문 상태 변경
+	@Transactional
+	public ChangeOrderStatusResponseDto updateOrderStatus(Long userId, Long orderId, ChangeOrderStatusRequestDto dto) {
+		User user = findUserByIdOrElseThrow(userId);
+		Order order = findOrderByIdOrElseThrow(orderId);
+		// 사용자 권한 확인
+		checkUserAccess(user);
+		// 주문 상태 변경
+		OrderStatus orderStatus = OrderStatus.from(dto.orderStatus());
+		order.setOrderStatus(orderStatus);
+
+		return new ChangeOrderStatusResponseDto(order.getOrderStatus());
 	}
 
 	/* 예외처리 */
@@ -66,6 +84,12 @@ public class OrderService {
 			.orElseThrow(UserNotFoundException::new);
 	}
 
+	private Order findOrderByIdOrElseThrow(Long orderId){
+		return orderRepository.findById(orderId)
+			.orElseThrow(OrderNotFoundException::new);
+	}
+
+	/* 메서드 */
 	private static void checkOrderTimeWithinOperatingHours(Store store) {
 		LocalTime orderTime = LocalTime.now();
 		LocalTime openTime = dateTimeFormat(store.getOpenTime());
@@ -88,6 +112,12 @@ public class OrderService {
 	private static void checkMinOrderAmount(Store store, int totalAmount) {
 		if (totalAmount < store.getMinOrderAmount()) {
 			throw new BusinessException(ErrorCode.INVALID_TOTALAMOUNT);
+		}
+	}
+
+	private static void checkUserAccess(User user) {
+		if (user.getRole() != UserRoleEnum.OWNER) {
+			throw new BusinessException(ErrorCode.FORBIDDEN_ACCESS);
 		}
 	}
 }
