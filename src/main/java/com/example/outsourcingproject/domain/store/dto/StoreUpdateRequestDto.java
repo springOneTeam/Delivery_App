@@ -27,5 +27,6 @@ public record StoreUpdateRequestDto(
 	int minOrderAmount,
 
 	boolean isOperating
-) {}
+) {
+}
 

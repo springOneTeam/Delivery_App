@@ -1,7 +1,5 @@
 package com.example.outsourcingproject.domain.store.dto;
 
-import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.Min;
