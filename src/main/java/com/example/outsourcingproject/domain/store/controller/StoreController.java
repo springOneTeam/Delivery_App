@@ -6,7 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,6 +18,8 @@ import com.example.outsourcingproject.common.ApiResponse;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestWithUserDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateResponseDto;
+import com.example.outsourcingproject.domain.store.dto.StoreUpdateRequestDto;
+import com.example.outsourcingproject.domain.store.dto.StoreUpdateResponseDto;
 import com.example.outsourcingproject.domain.store.service.StoreService;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.enums.UserRoleEnum;
@@ -54,5 +58,16 @@ public class StoreController {
 		return ResponseEntity
 			.created(URI.create("/api/stores/" + responseDto.storeId()))
 			.body(response);
+	}
+
+	@PutMapping("/{storeId}")
+	public ResponseEntity<ApiResponse<StoreUpdateResponseDto>> updateStore(
+		@PathVariable Long storeId,
+		@AuthenticationPrincipal Long userId,  // JWT 구현 후 수정 필요
+		@Valid @RequestBody StoreUpdateRequestDto requestDto
+	) {
+		StoreUpdateResponseDto responseDto = storeService.updateStore(storeId, userId, requestDto);
+
+		return ResponseEntity.ok(ApiResponse.success("가게 정보가 성공적으로 수정되었습니다.", responseDto));
 	}
 }
