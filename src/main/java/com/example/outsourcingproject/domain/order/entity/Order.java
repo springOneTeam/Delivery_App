@@ -27,6 +27,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -51,6 +52,7 @@ public class Order {
 	@JoinColumn(name = "menu_id")
 	private Menu menu;
 
+	@Setter
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
 
