@@ -23,15 +23,16 @@ public class UserService {
 	 * @return
 	 */
 	public UserSignUpResponseDto signUpUser(UserSignUpRequestDto requestDto) {
-
-		// 비즈니스 규칙: 이메일은 정복되어선 안된다.
+		// 비즈니스 규칙: 이메일 검증
 		verifyEmail(requestDto.email());
 
 		// 비밀번호 형식 검증
 		User.validatePassword(requestDto.password());
 
-		String encryptedPassword = User.generateEncryptedPassword(requestDto.password()).getPassword();
+		// 비밀번호 암호화 - 이 부분 수정
+		String encryptedPassword = User.generateEncryptedPassword(requestDto.password());
 
+		// 새 유저 생성
 		User newUser = User.create(requestDto.nickName(), requestDto.email(), encryptedPassword, requestDto.role());
 
 		User savedUser = userRepository.save(newUser);

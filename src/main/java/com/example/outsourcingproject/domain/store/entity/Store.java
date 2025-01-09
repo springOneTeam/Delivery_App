@@ -7,6 +7,8 @@ import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.order.entity.Order;
 import com.example.outsourcingproject.domain.review.entity.Review;
 import com.example.outsourcingproject.domain.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -43,10 +45,10 @@ public class Store {
 	private String address;
 
 	@Column(nullable = false)
-	private LocalTime openTime;
+	private String openTime;  // LocalTime에서 String으로 변경
 
 	@Column(nullable = false)
-	private LocalTime closeTime;
+	private String closeTime;  // LocalTime에서 String으로 변경
 
 	@Column(nullable = false)
 	private int minOrderAmount;
@@ -67,7 +69,7 @@ public class Store {
 
 	@Builder
 	public Store(User owner, String storeName, String tel, String address,
-		LocalTime openTime, LocalTime closeTime, int minOrderAmount,
+		String openTime, String closeTime, int minOrderAmount,
 		boolean isOperating) {
 		this.owner = owner;
 		this.storeName = storeName;
