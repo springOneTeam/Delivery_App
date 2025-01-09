@@ -6,6 +6,7 @@ import java.util.List;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.order.entity.Order;
 import com.example.outsourcingproject.domain.review.entity.Review;
+import com.example.outsourcingproject.domain.store.dto.StoreUpdateRequestDto;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -79,5 +80,15 @@ public class Store {
 		this.closeTime = closeTime;
 		this.minOrderAmount = minOrderAmount;
 		this.isOperating = isOperating;
+	}
+
+	public void update(StoreUpdateRequestDto dto) {
+		this.storeName = dto.storeName();
+		this.tel = dto.tel();
+		this.address = dto.address();
+		this.openTime = dto.openTime();
+		this.closeTime = dto.closeTime();
+		this.minOrderAmount = dto.minOrderAmount();
+		this.isOperating = dto.isOperating();
 	}
 }
