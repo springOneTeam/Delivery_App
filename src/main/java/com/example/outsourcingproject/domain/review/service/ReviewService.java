@@ -13,6 +13,8 @@ import com.example.outsourcingproject.domain.order.service.OrderService;
 import com.example.outsourcingproject.exception.ErrorCode;
 import com.example.outsourcingproject.exception.GlobalExceptionHandler;
 import com.example.outsourcingproject.exception.common.BusinessException;
+import com.example.outsourcingproject.exception.common.OrderNoDeivered;
+import com.example.outsourcingproject.exception.common.OrderNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,17 +35,17 @@ public class ReviewService {
     // 주문을 ID로 찾는 메서드
     private Order findOrderByIdOrElseThrow(Long orderId) {
         return orderRepository.findById(orderId)
-               .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS, "주문을 찾을 수 없습니다. ID: " + orderId));
+               .orElseThrow(() -> new OrderNotFoundException(ErrorCode.ORDER_NOT_FOUND));
     }
 
-    // 주문 검증 메서드: 주문 상태가 'COMPLETED'여야 하고, 작성자는 본인만
+    // 주문 검증 메서드: 주문 상태가 'DELIVERED'여야 하고, 작성자는 본인만
     private void validateOrder(Long orderId, Long userId) {
         Order order = findOrderByIdOrElseThrow(orderId);
 
-        // 주문 상태가 'COMPLETED'여야만 리뷰를 작성할 수 있음
-        //if (!order.getOrderStatus().equals("COMPLETED")) {
-        //    throw new BusinessException(ErrorCode.ORDER_NOT_COMPLETED, "주문이 완료되지 않았습니다.");
-        //}
+        // 주문 상태가 'DELIVERED'여야만 리뷰를 작성할 수 있음
+        if (!order.getOrderStatus().equals("DELIVERED")) {
+           throw new OrderNoDeivered(ErrorCode.ORDER_NOT_DELIVERED);
+        }
 
         // 주문한 유저만 리뷰를 작성할 수 있음
         if (!order.getUser().getUserId().equals(userId)) {
