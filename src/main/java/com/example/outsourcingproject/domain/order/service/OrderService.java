@@ -1,6 +1,8 @@
 package com.example.outsourcingproject.domain.order.service;
 
+import java.time.DateTimeException;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Service;
 
@@ -45,9 +47,8 @@ public class OrderService {
 		// 주문 생성 시 일단 보류 상태로 표시
 		Order order = new Order(user, store, menu, OrderStatus.PENDING, createOrderRequestDto.cart());
 
-		Order saveOrder=orderRepository.save(order);
+		Order saveOrder = orderRepository.save(order);
 	}
-
 
 	/* 예외처리 */
 	private Store findStoreByIdOrElseThrow(Long storeId) {
@@ -55,26 +56,37 @@ public class OrderService {
 			.orElseThrow(StoreNotFoundException::new);
 	}
 
-	private Menu findMenuByIdOrElseThrow(Long menuId){
+	private Menu findMenuByIdOrElseThrow(Long menuId) {
 		return menuRepository.findById(menuId)
 			.orElseThrow(MenuNotFoundException::new);
 	}
 
-	private User findUserByIdOrElseThrow(Long userId){
+	private User findUserByIdOrElseThrow(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(UserNotFoundException::new);
 	}
 
 	private static void checkOrderTimeWithinOperatingHours(Store store) {
-		LocalTime orderTime=LocalTime.now();
+		LocalTime orderTime = LocalTime.now();
+		LocalTime openTime = dateTimeFormat(store.getOpenTime());
+		LocalTime closeTime = dateTimeFormat(store.getCloseTime());
 
-		if(orderTime.isBefore(store.getOpenTime()) || orderTime.isAfter(store.getCloseTime())){
+		if (orderTime.isBefore(openTime) || orderTime.isAfter(closeTime)) {
 			throw new BusinessException(ErrorCode.INVALID_ORDER_TIME);
 		}
 	}
 
+	private static LocalTime dateTimeFormat(String stringTime) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+		try {
+			return LocalTime.parse(stringTime, formatter);
+		} catch (DateTimeException e) {
+			throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "잘못된 시간 형식입니다. HH:mm 형식으로 입력해주세요.");
+		}
+	}
+
 	private static void checkMinOrderAmount(Store store, int totalAmount) {
-		if (totalAmount< store.getMinOrderAmount()) {
+		if (totalAmount < store.getMinOrderAmount()) {
 			throw new BusinessException(ErrorCode.INVALID_TOTALAMOUNT);
 		}
 	}
