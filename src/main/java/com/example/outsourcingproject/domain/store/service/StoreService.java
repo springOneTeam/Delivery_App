@@ -1,10 +1,17 @@
 package com.example.outsourcingproject.domain.store.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.outsourcingproject.common.ApiResponse;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateResponseDto;
+import com.example.outsourcingproject.domain.store.dto.StoreDetailResponseDto;
+import com.example.outsourcingproject.domain.store.dto.StoreListResponseDto;
 import com.example.outsourcingproject.domain.store.dto.StoreUpdateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.StoreUpdateResponseDto;
 import com.example.outsourcingproject.domain.store.entity.Store;
@@ -68,6 +75,30 @@ public class StoreService {
 		return StoreUpdateResponseDto.from(store);
 	}
 
+	// 가게 목록 조회 (사용자 타입별 + 가게명 검색)
+	public ApiResponse<?> getStores(String storeName) {
+		// 가게명이 정확히 입력된 경우 -> 상세 조회
+		if (storeName != null && !storeName.trim().isEmpty()) {
+			Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
+			if (storeOptional.isPresent()) {
+				// 정확한 가게명이 있을 경우 -> 메뉴 포함 상세 정보 반환
+				return ApiResponse.success(
+					"가게 상세 조회 성공",
+					StoreDetailResponseDto.from(storeOptional.get())
+				);
+			}
+		}
+
+		// 가게명이 없거나 정확히 일치하는 가게가 없는 경우 -> 목록 조회
+		List<Store> stores = (storeName != null && !storeName.trim().isEmpty())
+			? storeRepository.findAllByStoreName(storeName)
+			: storeRepository.findAll();
+
+		return ApiResponse.success(
+			"가게 목록 조회 성공",
+			StoreListResponseDto.from(stores)
+		);
+	}
 
 	private void validateStoreCount(User owner) {
 		long storeCount = storeRepository.countByOwner(owner);

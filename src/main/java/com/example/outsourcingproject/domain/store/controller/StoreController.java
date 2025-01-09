@@ -6,11 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +20,7 @@ import com.example.outsourcingproject.common.ApiResponse;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestWithUserDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateResponseDto;
+import com.example.outsourcingproject.domain.store.dto.StoreListResponseDto;
 import com.example.outsourcingproject.domain.store.dto.StoreUpdateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.StoreUpdateResponseDto;
 import com.example.outsourcingproject.domain.store.service.StoreService;
@@ -69,5 +72,12 @@ public class StoreController {
 		StoreUpdateResponseDto responseDto = storeService.updateStore(storeId, userId, requestDto);
 
 		return ResponseEntity.ok(ApiResponse.success("가게 정보가 성공적으로 수정되었습니다.", responseDto));
+	}
+
+	@GetMapping
+	public ResponseEntity<ApiResponse<?>> getStores(
+		@RequestParam(required = false) String storeName
+	) {
+		return ResponseEntity.ok(storeService.getStores(storeName));
 	}
 }
