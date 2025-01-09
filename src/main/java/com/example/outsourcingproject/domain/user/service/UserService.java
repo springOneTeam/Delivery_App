@@ -21,7 +21,6 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final JwtUtil jwtUtil;
-	private final PasswordEncoder passwordEncoder;
 
 	/**
 	 * TODO :: 추후 토큰 생성 후 반환
@@ -65,11 +64,9 @@ public class UserService {
 			throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
 		}
 	}
-	// 엔티티로 옮겨야 됨.
+
 	private void matchPassword(String requestPassword, String storagePassword) {
-		if (!passwordEncoder.matches(requestPassword, storagePassword)) {
-			throw new BusinessException(ErrorCode.LOGIN_FAILED);
-		}
+		User.matchesPassword(requestPassword, storagePassword);
 	}
 
 }
