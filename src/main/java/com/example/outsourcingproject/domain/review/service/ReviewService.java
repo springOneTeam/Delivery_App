@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final OrderRepository orderRepository;  // OrderRepository 주입
+    private final OrderRepository orderRepository;  // OrderRepository
     private final UserService userService; // 유저 서비스
     private final StoreService storeService; // 가게 서비스
 
@@ -93,7 +93,7 @@ public class ReviewService {
     // 가게별 리뷰 조회
     public List<ReviewResponse> getReviewsByStoreId(Long storeId) {
         // storeId를 기준으로 리뷰 조회
-        List<Review> reviews = reviewRepository.findByStore_StoreId(storeId);
+        List<Review> reviews = reviewRepository.findByStoreIdOrderByCreatedAtDesc(storeId);
 
         // 리뷰 리스트를 ReviewResponse로 변환
         return reviews.stream()
@@ -112,7 +112,7 @@ public class ReviewService {
     // 가게별 별점 범위에 맞는 리뷰 조회
     public List<ReviewResponse> getReviewsByStoreIdAndRating(Long storeId, int minRating, int maxRating) {
         // storeId와 별점 범위를 기준으로 리뷰 조회
-        List<Review> reviews = reviewRepository.findByStore_StoreIdAndRatingBetween(storeId, minRating, maxRating);
+        List<Review> reviews = reviewRepository.findByStore_StoreIdAndRatingBetweenOrderByCreatedAtDesc(storeId, minRating, maxRating);
 
         // 리뷰 리스트를 ReviewResponse로 변환
         return reviews.stream()
