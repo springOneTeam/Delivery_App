@@ -95,4 +95,7 @@ public class User {
 		return BCrypUtil.encrypt(rawPassword);
 	}
 
+	// public boolean matchPassword(String rawPassword) {
+	// 	return BCrypUtil.matches(rawPassword, )
+	// }
 }

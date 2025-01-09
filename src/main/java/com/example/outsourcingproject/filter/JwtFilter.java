@@ -36,21 +36,20 @@ public class JwtFilter extends OncePerRequestFilter {
 		// 2. JWT 검증 (토큰이 없으면 doFilter로 전달됩니다)
 		if (token != null & jwtUtil.validateToken(token)) {
 
-			// 사용자 정보 추출
+			// 2.1 사용자 정보 추출
 			Long userId = jwtUtil.extractUserId(token);
 			String role = jwtUtil.extractRole(token);
 
-			// 2.1 Authentication 객체 생성 (Spring Security에서 사용되는 인증 객체)
+			// 2.2 Authentication 객체 생성 (Spring Security에서 사용되는 인증 객체)
 			Authentication auth = new UsernamePasswordAuthenticationToken(
 				userId,
 				null, // 자격 증명. JWT 인증에서는 사용하지 않음
 				List.of(new SimpleGrantedAuthority("ROLE_" + role)) // 사용자 권한 정보
 			);
 
-			// 2.2 SecurityContext에 인증 객체 저장
+			// 2.3 SecurityContext에 인증 객체 저장
 			SecurityContextHolder.getContext().setAuthentication(auth);
 		}
-
 		// 3. 다음 필터로 요청 전달
 		filterChain.doFilter(request, response);
 	}
