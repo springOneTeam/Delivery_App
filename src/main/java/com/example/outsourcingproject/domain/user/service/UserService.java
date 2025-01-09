@@ -26,7 +26,7 @@ public class UserService {
 		// 비즈니스 규칙: 이메일 검증
 		verifyEmail(requestDto.email());
 
-		// 비밀번호 형식 검증
+		// 비즈니스 규칙: 비밀번호 형식 검증
 		User.validatePassword(requestDto.password());
 
 		// 비밀번호 암호화 - 이 부분 수정
