@@ -3,14 +3,18 @@ package com.example.outsourcingproject.domain.order.service;
 import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
 import com.example.outsourcingproject.domain.order.dto.ChangeOrderStatusRequestDto;
 import com.example.outsourcingproject.domain.order.dto.ChangeOrderStatusResponseDto;
 import com.example.outsourcingproject.domain.order.dto.CreateOrderRequestDto;
+import com.example.outsourcingproject.domain.order.dto.OrderListDto;
+import com.example.outsourcingproject.domain.order.dto.OrderListResponseDto;
 import com.example.outsourcingproject.domain.order.entity.Order;
 import com.example.outsourcingproject.domain.order.enums.OrderStatus;
 import com.example.outsourcingproject.domain.order.repository.OrderRepository;
@@ -27,7 +31,6 @@ import com.example.outsourcingproject.exception.common.OrderNotFoundException;
 import com.example.outsourcingproject.exception.common.StoreNotFoundException;
 import com.example.outsourcingproject.exception.common.UserNotFoundException;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -59,13 +62,25 @@ public class OrderService {
 	public ChangeOrderStatusResponseDto updateOrderStatus(Long userId, Long orderId, ChangeOrderStatusRequestDto dto) {
 		User user = findUserByIdOrElseThrow(userId);
 		Order order = findOrderByIdOrElseThrow(orderId);
-		// 사용자 권한 확인
+
 		checkUserAccess(user);
-		// 주문 상태 변경
+
 		OrderStatus orderStatus = OrderStatus.from(dto.orderStatus());
 		order.setOrderStatus(orderStatus);
 
 		return new ChangeOrderStatusResponseDto(order.getOrderStatus());
+	}
+
+	// 주문 내역 조회
+	@Transactional(readOnly = true)
+	public OrderListResponseDto findAllOrders(Long userId) {
+
+		List<OrderListDto> orderListDtoList = orderRepository.findByUser_UserId(userId)
+			.stream()
+			.map(OrderListDto::mapToDto)
+			.toList();
+
+		return OrderListResponseDto.convertFrom(orderListDtoList);
 	}
 
 	/* 예외처리 */
