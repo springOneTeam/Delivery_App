@@ -2,6 +2,8 @@ package com.example.outsourcingproject.domain.user.entity;
 
 import java.util.regex.Pattern;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import com.example.outsourcingproject.domain.user.enums.UserRoleEnum;
 import com.example.outsourcingproject.utils.BCrypUtil;
 import com.example.outsourcingproject.exception.ErrorCode;
@@ -44,7 +46,7 @@ public class User {
 	@Enumerated(value = EnumType.STRING)
 	private UserRoleEnum role;
 
-	private Boolean isDeleted = false;
+	private final Boolean isDeleted = false;
 
 	public User() {
 	}
@@ -95,4 +97,10 @@ public class User {
 		return BCrypUtil.encrypt(rawPassword);
 	}
 
+	public static Boolean matchesPassword(String requestPassword, String storagePassword) {
+		if (!BCrypUtil.matches(requestPassword, storagePassword)) {
+			throw new BusinessException(ErrorCode.LOGIN_FAILED);
+		}
+		return true;
+	}
 }
