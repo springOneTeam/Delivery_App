@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record StoreCreateRequestWithUserDto(
-	Long userId,  // userId 필드 추가
 
 	@NotBlank(message = "상호명은 필수입니다")
 	String storeName,
