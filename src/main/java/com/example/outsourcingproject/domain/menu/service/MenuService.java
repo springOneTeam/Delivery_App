@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.outsourcingproject.domain.menu.dto.request.MenuRequestDto;
+import com.example.outsourcingproject.domain.menu.dto.response.DeleteMenuResponseDto;
 import com.example.outsourcingproject.domain.menu.dto.response.MenuResponseDto;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.menu.repository.MenuRepository;
@@ -59,13 +60,13 @@ public class MenuService {
 	 * 메뉴 삭제
 	 */
 	@Transactional
-	public MenuResponseDto deleteMenu(Long storeId, Long menuId, Long userId) {
+	public DeleteMenuResponseDto deleteMenu(Long storeId, Long menuId, Long userId) {
 		Store store = storeService.findStoreById(storeId);
 		Menu menu = findMenuById(menuId);
 		validateOwnerAccess(userId, store);
 
 		menu.delete();
-		return MenuResponseDto.fromEntity(menu);
+		return DeleteMenuResponseDto.of(menu);
 	}
 
 	private Menu findMenuById(Long menuId) {
