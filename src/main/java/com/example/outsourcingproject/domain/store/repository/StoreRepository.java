@@ -15,7 +15,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 	// 정확한 가게명으로 단건 조회
 	Optional<Store> findByStoreName(String storeName);
 	List<Store> findAllByStoreName(String storeName);
-	List<Store> findAllByStoreNameAndIsClosedFalse(String storeName);
-	Optional<Store> findByStoreNameAndIsClosedFalse(String storeName);
-	List<Store> findAllByIsClosedFalse();
+	Optional<Store> findByStoreNameAndIsOperatingTrue(String storeName);
+	List<Store> findAllByStoreNameAndIsOperatingTrue(String storeName);
+	List<Store> findAllByIsOperatingTrue();;
 }

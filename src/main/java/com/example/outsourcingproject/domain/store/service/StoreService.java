@@ -58,18 +58,6 @@ public class StoreService {
 		Store store = storeRepository.findById(storeId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-		// 가게 주인 확인
-		// if (!store.getOwner().getUserId().equals(userId)) {
-		// 	throw new BusinessException(ErrorCode.FORBIDDEN_ACCESS, "해당 가게의 수정 권한이 없습니다.");
-		// }
-
-		// 사용자의 OWNER 권한 확인
-		// User user = userRepository.findById(userId)
-		// 	.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-		// if (user.getRole() != UserRoleEnum.OWNER) {
-		// 	throw new BusinessException(ErrorCode.FORBIDDEN_ACCESS, "사장님만 가게를 수정할 수 있습니다.");
-		// }
-
 		// 가게 정보 업데이트
 		store.update(requestDto);
 
@@ -77,26 +65,23 @@ public class StoreService {
 	}
 
 	@Transactional
-	public StoreCloseResponseDto closeStore(Long storeId) {
+	public StoreCloseResponseDto closeStore(Long storeId, Long userId) {
 		Store store = storeRepository.findById(storeId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-		// 이미 폐업한 가게인지 확인
-		if (store.isClosed()) {
-			throw new BusinessException(ErrorCode.INVALID_ACCESS, "이미 폐업한 가게입니다.");
+		// 가게 주인 확인
+		if (!store.getOwner().getUserId().equals(userId)) {
+			throw new BusinessException(ErrorCode.FORBIDDEN_ACCESS, "해당 가게의 폐업 권한이 없습니다.");
 		}
 
-		// 폐업 처리
 		store.close();
-
 		return StoreCloseResponseDto.from(store);
 	}
 
-	// 가게 목록 조회 메서드 수정 (폐업하지 않은 가게만 조회)
+	// getStores 메서드 수정 - 운영 중인 가게만 조회되도록
 	public ApiResponse<?> getStores(String storeName) {
-		// 가게명이 정확히 입력된 경우 -> 상세 조회
 		if (storeName != null && !storeName.trim().isEmpty()) {
-			Optional<Store> storeOptional = storeRepository.findByStoreNameAndIsClosedFalse(storeName);
+			Optional<Store> storeOptional = storeRepository.findByStoreNameAndIsOperatingTrue(storeName);
 			if (storeOptional.isPresent()) {
 				return ApiResponse.success(
 					"가게 상세 조회 성공",
@@ -105,10 +90,9 @@ public class StoreService {
 			}
 		}
 
-		// 가게명이 없거나 정확히 일치하는 가게가 없는 경우 -> 목록 조회
 		List<Store> stores = (storeName != null && !storeName.trim().isEmpty())
-			? storeRepository.findAllByStoreNameAndIsClosedFalse(storeName)
-			: storeRepository.findAllByIsClosedFalse();  // 폐업하지 않은 가게만 조회
+			? storeRepository.findAllByStoreNameAndIsOperatingTrue(storeName)
+			: storeRepository.findAllByIsOperatingTrue();
 
 		return ApiResponse.success(
 			"가게 목록 조회 성공",
