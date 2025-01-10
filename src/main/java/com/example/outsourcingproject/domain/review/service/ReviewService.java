@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.domain.review.service;
 
 import com.example.outsourcingproject.domain.order.entity.Order;
+import com.example.outsourcingproject.domain.order.enums.OrderStatus;
 import com.example.outsourcingproject.domain.order.repository.OrderRepository;
 import com.example.outsourcingproject.domain.review.dto.ReviewRequest;
 import com.example.outsourcingproject.domain.review.dto.ReviewResponse;
@@ -43,7 +44,7 @@ public class ReviewService {
         Order order = findOrderByIdOrElseThrow(orderId);
 
         // 주문 상태가 'DELIVERED'여야만 리뷰를 작성할 수 있음
-        if (!order.getOrderStatus().equals("DELIVERED")) {
+        if (!order.getOrderStatus().equals(OrderStatus.DELIVERED)) {
            throw new OrderNoDeivered(ErrorCode.ORDER_NOT_DELIVERED);
         }
 

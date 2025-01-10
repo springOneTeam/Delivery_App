@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/api")
 public class ReviewController {
 
     @Autowired
@@ -21,14 +21,14 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
     // 리뷰 작성
-    @PostMapping
+    @PostMapping("/orders/{orderId}/reviews")
     @ResponseStatus(HttpStatus.CREATED)
     public ReviewResponse createReview(@RequestBody ReviewRequest reviewRequest, @RequestParam Long userId) {
         return reviewService.createReview(reviewRequest, userId);
     }
 
     //리뷰조회(가게기준, 필터링 포함)
-    @GetMapping("/store/{storeId}")
+    @GetMapping("/store/{storeId}/reviews")
     public List<ReviewResponse> getReviewsByStore(@PathVariable Long storeId,
                                                   @RequestParam(required = false) Integer minRating,
                                                   @RequestParam(required = false) Integer maxRating) {

@@ -7,5 +7,4 @@ public record UserSignUpResponseDto(UserRoleEnum role) {
 	public static UserSignUpResponseDto toDto(UserRoleEnum role) {
 		return new UserSignUpResponseDto(role);
 	}
-
 }

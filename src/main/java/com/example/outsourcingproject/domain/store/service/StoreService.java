@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.outsourcingproject.common.ApiResponse;
+import com.example.outsourcingproject.domain.store.dto.StoreCloseResponseDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateResponseDto;
 import com.example.outsourcingproject.domain.store.dto.StoreDetailResponseDto;
@@ -75,13 +76,28 @@ public class StoreService {
 		return StoreUpdateResponseDto.from(store);
 	}
 
-	// 가게 목록 조회 (사용자 타입별 + 가게명 검색)
+	@Transactional
+	public StoreCloseResponseDto closeStore(Long storeId) {
+		Store store = storeRepository.findById(storeId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+		// 이미 폐업한 가게인지 확인
+		if (store.isClosed()) {
+			throw new BusinessException(ErrorCode.INVALID_ACCESS, "이미 폐업한 가게입니다.");
+		}
+
+		// 폐업 처리
+		store.close();
+
+		return StoreCloseResponseDto.from(store);
+	}
+
+	// 가게 목록 조회 메서드 수정 (폐업하지 않은 가게만 조회)
 	public ApiResponse<?> getStores(String storeName) {
 		// 가게명이 정확히 입력된 경우 -> 상세 조회
 		if (storeName != null && !storeName.trim().isEmpty()) {
-			Optional<Store> storeOptional = storeRepository.findByStoreName(storeName);
+			Optional<Store> storeOptional = storeRepository.findByStoreNameAndIsClosedFalse(storeName);
 			if (storeOptional.isPresent()) {
-				// 정확한 가게명이 있을 경우 -> 메뉴 포함 상세 정보 반환
 				return ApiResponse.success(
 					"가게 상세 조회 성공",
 					StoreDetailResponseDto.from(storeOptional.get())
@@ -91,14 +107,15 @@ public class StoreService {
 
 		// 가게명이 없거나 정확히 일치하는 가게가 없는 경우 -> 목록 조회
 		List<Store> stores = (storeName != null && !storeName.trim().isEmpty())
-			? storeRepository.findAllByStoreName(storeName)
-			: storeRepository.findAll();
+			? storeRepository.findAllByStoreNameAndIsClosedFalse(storeName)
+			: storeRepository.findAllByIsClosedFalse();  // 폐업하지 않은 가게만 조회
 
 		return ApiResponse.success(
 			"가게 목록 조회 성공",
 			StoreListResponseDto.from(stores)
 		);
 	}
+
 
 	private void validateStoreCount(User owner) {
 		long storeCount = storeRepository.countByOwner(owner);
