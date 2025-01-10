@@ -47,9 +47,8 @@ public class SecurityConfig {
 			)
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-				.requestMatchers("/api/users/login", "/api/users/signup").permitAll() // 로그인, 회원가입 경로는 인증 없이 접근 가능
-				.requestMatchers("/api/stores/{storeId}/reviews").hasAnyRole("CUSTOMER", "OWNER") // CUSTOMER, OWNER 둘 다 접근 가능
-				.requestMatchers("/api/stores/**").hasRole("OWNER") // ONWER 권한이 있는 사용자만 접근 허용
+				.requestMatchers("/users/login", "/users/signup").permitAll() // 로그인, 회원가입 경로는 인증 없이 접근 가능
+				.requestMatchers("/api/**").hasAnyRole("CUSTOMER", "OWNER") // CUSTOMER, OWNER 둘 다 접근 가능 // 로그인, 회원가입 경로는 인증 없이 접근 가능
 				.anyRequest().authenticated() // // 나머지 요청은 인증 필요
 			)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
