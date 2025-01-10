@@ -5,6 +5,7 @@ import java.net.URI;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,18 +41,20 @@ public class StoreController {
 	private final StoreService storeService;
 	private final UserService userService;
 	@PostMapping
+	@PreAuthorize("hasRole('OWNER')") // OWNER Role만 접근 가능 - 어노테이션 추가
 	public ResponseEntity<ApiResponse<StoreCreateResponseDto>> createStore(
-		@Valid @RequestBody StoreCreateRequestWithUserDto requestDto  // DTO 수정
+		@AuthenticationPrincipal Long userId, // - 어노테이션 추가
+		@Valid @RequestBody StoreCreateRequestWithUserDto requestDto  // - DTO 수정 ( id 제거 )
 	) {
-		// User 엔티티로 사용자 조회
-		User user = userService.getUserById(requestDto.userId());  // userId를 DTO에서 가져옴
-
-		if (user.getRole() != UserRoleEnum.OWNER) {
-			throw new UnauthorizedException("사장님만 가게를 등록할 수 있습니다.");
-		}
+		// // User 엔티티로 사용자 조회
+		// User user = userService.getUserById(requestDto.userId());  // userId를 DTO에서 가져옴
+		//
+		// if (user.getRole() != UserRoleEnum.OWNER) {
+		// 	throw new UnauthorizedException("사장님만 가게를 등록할 수 있습니다.");
+		// }
 
 		// StoreService의 createStore 메서드 호출
-		StoreCreateResponseDto responseDto = storeService.createStore(requestDto.toStoreCreateRequestDto(), requestDto.userId());
+		StoreCreateResponseDto responseDto = storeService.createStore(requestDto.toStoreCreateRequestDto(), userId); // - 매개변수 userId로 교체
 
 		ApiResponse<StoreCreateResponseDto> response = ApiResponse.success(
 			"가게가 성공적으로 등록되었습니다.",
