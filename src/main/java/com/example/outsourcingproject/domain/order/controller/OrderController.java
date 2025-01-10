@@ -21,6 +21,7 @@ import com.example.outsourcingproject.domain.order.dto.OrderListResponseDto;
 import com.example.outsourcingproject.domain.order.entity.Order;
 import com.example.outsourcingproject.domain.order.service.OrderService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,8 @@ public class OrderController {
 
 	private final OrderService orderService;
 
-	// 주문 생성
 	@PostMapping
+	@Operation(summary = "주문 생성")
 	public ResponseEntity<ApiResponse<CreateOrderResponseDto>> creatOrder(
 		@AuthenticationPrincipal Long userId,
 		@Valid @RequestBody CreateOrderRequestDto createOrderRequestDto
@@ -43,9 +44,9 @@ public class OrderController {
 		return new ResponseEntity<>(ApiResponse.success("음식을 주문했습니다."), HttpStatus.CREATED);
 	}
 
-	// 주문 상태 변경
 	@PatchMapping("/{orderId}/status")
-	@PreAuthorize("hasRole('OWNER')") // OWNER 권한을 가진 사용자만 접근 가능
+	@PreAuthorize("hasRole('OWNER')")
+	@Operation(summary = "주문 상태 변경", description = "사장님(OWNER) 권한을 가진 사용자만 주문 상태를 변경할 수 있습니다.")
 	public ResponseEntity<ApiResponse<ChangeOrderStatusResponseDto>> updateOrderStatus(
 		@AuthenticationPrincipal Long userId,
 		@PathVariable Long orderId,
@@ -58,8 +59,8 @@ public class OrderController {
 			ApiResponse.success("주문상태를 변경했습니다.", responseDto), HttpStatus.OK);
 	}
 
-	// 주문 내역 조회
 	@GetMapping
+	@Operation(summary = "주문 내역 조회")
 	public ResponseEntity<ApiResponse<OrderListResponseDto>> findAllOrders(
 		@AuthenticationPrincipal Long userId
 	) {
