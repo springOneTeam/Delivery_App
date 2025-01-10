@@ -56,6 +56,11 @@ public class ReviewService {
 
     // 리뷰 생성 메서드
     public ReviewResponse createReview(ReviewRequest reviewRequest, Long userId) {
+        // 별점 유효성 검증 (1~5 사이)
+        if (reviewRequest.rating() < 1 || reviewRequest.rating() > 5) {
+            throw new IllegalArgumentException("별점은 1부터 5까지의 값만 입력할 수 있습니다.");
+        }
+
         // 주문 유효성 검증
         validateOrder(reviewRequest.orderId(), userId);
 
