@@ -49,6 +49,7 @@ public class OrderService {
 		Menu menu = findMenuByIdOrElseThrow(dto.menuId());
 		User user = findUserByIdOrElseThrow(userId);
 
+		checkMenuIsDeleted(menu);
 		checkMinOrderAmount(store, menu.getPrice());
 		checkOrderTimeWithinOperatingHours(store);
 
@@ -125,6 +126,12 @@ public class OrderService {
 	private static void checkMinOrderAmount(Store store, int totalAmount) {
 		if (totalAmount < store.getMinOrderAmount()) {
 			throw new BusinessException(ErrorCode.INVALID_TOTALAMOUNT);
+		}
+	}
+
+	private void checkMenuIsDeleted(Menu menu) {
+		if (menu.isDeleted()){
+			throw new MenuNotFoundException("메뉴를 찾을 수 없습니다. menuId: " + menu.getMenuId());
 		}
 	}
 }
