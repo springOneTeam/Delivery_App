@@ -41,7 +41,7 @@ public class Menu {
 	private boolean isDeleted;
 
 	@Builder
-	public Menu(Store store, String menuName, int price, boolean isDeleted) {
+	public Menu(Store store, String menuName, int price) {
 		this.store = store;
 		this.menuName = menuName;
 		this.price = price;

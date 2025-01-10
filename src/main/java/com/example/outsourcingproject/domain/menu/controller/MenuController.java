@@ -66,14 +66,14 @@ public class MenuController {
 	 * SoftDelete
 	 */
 	@DeleteMapping("/{menuId}")
-	public ResponseEntity<ApiResponse<MenuResponseDto>> deleteMenu(
+	public ResponseEntity<ApiResponse<Void>> deleteMenu(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
 		@RequestHeader("userId") Long userId
 	) {
 		// TODO 토큰에서 userId 추출
 
-		MenuResponseDto responseDto = menuService.deleteMenu(storeId, menuId, userId);
-		return ResponseEntity.ok(ApiResponse.success("메뉴가 삭제되었습니다.", responseDto));
+		menuService.deleteMenu(storeId, menuId, userId);
+		return ResponseEntity.ok(ApiResponse.success("메뉴가 삭제되었습니다."));
 	}
 }
