@@ -22,6 +22,7 @@ import com.example.outsourcingproject.domain.store.entity.Store;
 import com.example.outsourcingproject.domain.store.service.StoreService;
 import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.enums.UserRoleEnum;
+import com.example.outsourcingproject.exception.common.MenuNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class MenuServiceTest {
@@ -67,6 +68,7 @@ class MenuServiceTest {
 		MenuResponseDto responseDto = menuService.createMenu(storeId, requestDto, userId);
 
 		//then
+		verify(menuRepository).save(any(Menu.class));
 		assertThat("삼겹살").isEqualTo(responseDto.menuName());
 		assertThat(10000).isEqualTo(responseDto.price());
 	}
@@ -129,7 +131,11 @@ class MenuServiceTest {
 		when(storeService.findStoreById(storeId)).thenReturn(store);
 		when(menuRepository.findById(menuId)).thenReturn(Optional.of(menu));
 		when(menu.getMenuId()).thenReturn(menuId); // 반환값 설정
-		when(menu.isDeleted()).thenReturn(true);  // 반환값 설정
+		doAnswer(invocation -> {
+			when(menu.isDeleted()).thenReturn(true);
+			return null;
+		}).when(menu).delete();
+		// 반환값 설정
 
 		//when
 		MenuResponseDto responseDto = menuService.deleteMenu(storeId, menuId, userId);
@@ -138,4 +144,34 @@ class MenuServiceTest {
 		assertThat(responseDto.menuId()).isEqualTo(menuId);
 		assertTrue(menu.isDeleted()); // 설정한 값 검증
 	}
+
+	@Test
+	@DisplayName("이미 삭제된 메뉴 수정 시 예외 발생")
+	public void updateDeletedMenuThrowsException() {
+		//given
+		MenuRequestDto requestDto = new MenuRequestDto("소고기", 20000);
+		Store store = mock(Store.class);
+		User owner = mock(User.class);
+		Menu menu = mock(Menu.class);
+
+		//가게 주인과 권한 설정
+		when(store.getOwner()).thenReturn(owner);
+		when(owner.getUserId()).thenReturn(userId);
+		when(owner.getRole()).thenReturn(UserRoleEnum.OWNER);
+		//가게 및 메뉴 조회 Mock 설정
+		when(storeService.findStoreById(storeId)).thenReturn(store);
+		when(menuRepository.findById(menuId)).thenReturn(Optional.of(menu));
+		//메뉴가 이미 삭제된 상태로 설정
+		when(menu.isDeleted()).thenReturn(true);
+
+		//when 메뉴 수정 시 예외가 발생하는지 검증
+		MenuNotFoundException exception = assertThrows(MenuNotFoundException.class, () -> {
+			// 삭제된 메뉴를 수정하려고 할 때 예외 발생
+			menuService.updateMenu(storeId, menuId, requestDto, userId);}
+		);
+
+		//then 발생한 예외의 메시지가 예상 메시지와 같은지 확인
+		assertThat(exception.getMessage()).isEqualTo("이미 삭제된 메뉴입니다.");
+	}
+
 }
