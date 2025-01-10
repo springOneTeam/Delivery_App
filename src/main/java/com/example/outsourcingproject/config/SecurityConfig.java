@@ -11,8 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.outsourcingproject.filter.JwtFilter;
-import com.example.outsourcingproject.utils.AuthenticationEntryPoint;
-import com.example.outsourcingproject.utils.JwtAccessDeniedHandler;
+import com.example.outsourcingproject.exception.AuthenticationEntryPoint;
+import com.example.outsourcingproject.exception.JwtAccessDeniedHandler;
 
 import lombok.RequiredArgsConstructor;
 

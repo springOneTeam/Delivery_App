@@ -2,9 +2,7 @@ package com.example.outsourcingproject.domain.store.controller;
 
 import java.net.URI;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,21 +12,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.outsourcingproject.common.ApiResponse;
-import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestWithUserDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateResponseDto;
-import com.example.outsourcingproject.domain.store.dto.StoreListResponseDto;
 import com.example.outsourcingproject.domain.store.dto.StoreUpdateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.StoreUpdateResponseDto;
 import com.example.outsourcingproject.domain.store.service.StoreService;
-import com.example.outsourcingproject.domain.user.entity.User;
-import com.example.outsourcingproject.domain.user.enums.UserRoleEnum;
 import com.example.outsourcingproject.domain.user.service.UserService;
-import com.example.outsourcingproject.exception.auth.UnauthorizedException;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +32,7 @@ public class StoreController {
 
 	private final StoreService storeService;
 	private final UserService userService;
+
 	@PostMapping
 	@PreAuthorize("hasRole('OWNER')") // OWNER Role만 접근 가능 - 어노테이션 추가
 	public ResponseEntity<ApiResponse<StoreCreateResponseDto>> createStore(
@@ -54,7 +47,8 @@ public class StoreController {
 		// }
 
 		// StoreService의 createStore 메서드 호출
-		StoreCreateResponseDto responseDto = storeService.createStore(requestDto.toStoreCreateRequestDto(), userId); // - 매개변수 userId로 교체
+		StoreCreateResponseDto responseDto = storeService.createStore(requestDto.toStoreCreateRequestDto(),
+			userId); // - 매개변수 userId로 교체
 
 		ApiResponse<StoreCreateResponseDto> response = ApiResponse.success(
 			"가게가 성공적으로 등록되었습니다.",

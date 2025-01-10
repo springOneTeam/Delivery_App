@@ -1,4 +1,4 @@
-package com.example.outsourcingproject.utils;
+package com.example.outsourcingproject.exception;
 
 import java.io.IOException;
 
