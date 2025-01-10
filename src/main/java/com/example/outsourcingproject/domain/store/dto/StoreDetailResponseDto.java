@@ -18,6 +18,7 @@ public record StoreDetailResponseDto(
 ) {
 	public static StoreDetailResponseDto from(Store store) {
 		List<MenuResponseDto> menuList = store.getMenus().stream()
+			.filter(menu -> !menu.isDeleted())  // 삭제되지 않은 메뉴만 필터링
 			.map(MenuResponseDto::fromEntity)
 			.collect(Collectors.toList());
 

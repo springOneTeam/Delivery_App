@@ -5,13 +5,15 @@ import com.example.outsourcingproject.domain.store.entity.Store;
 public record StoreCloseResponseDto(
 	Long storeId,
 	String storeName,
-	boolean isClosed
+	boolean isOperating,
+	long remainingActiveStores
 ) {
-	public static StoreCloseResponseDto from(Store store) {
+	public static StoreCloseResponseDto from(Store store, long remainingActiveStores) {
 		return new StoreCloseResponseDto(
 			store.getStoreId(),
 			store.getStoreName(),
-			store.isClosed()
+			store.isOperating(),
+			remainingActiveStores
 		);
 	}
 }
