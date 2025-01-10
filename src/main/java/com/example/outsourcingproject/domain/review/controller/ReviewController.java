@@ -6,6 +6,7 @@ import com.example.outsourcingproject.domain.review.dto.ReviewResponse;
 import com.example.outsourcingproject.domain.review.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class ReviewController {
     // 리뷰 작성
     @PostMapping("/orders/{orderId}/reviews")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReviewResponse createReview(@RequestBody ReviewRequest reviewRequest, @RequestParam Long userId) {
+    public ReviewResponse createReview(@RequestBody ReviewRequest reviewRequest, @AuthenticationPrincipal Long userId) {
         return reviewService.createReview(reviewRequest, userId);
     }
 
