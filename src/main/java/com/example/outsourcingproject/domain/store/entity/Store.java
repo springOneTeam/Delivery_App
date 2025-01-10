@@ -67,6 +67,8 @@ public class Store {
 	@OneToMany(mappedBy = "store")
 	private List<Order> orders = new ArrayList<>();
 
+	@Column(nullable = false)
+	private boolean isClosed = false;  // 폐업 상태
 
 	@Builder
 	public Store(User owner, String storeName, String tel, String address,
@@ -90,5 +92,11 @@ public class Store {
 		this.closeTime = dto.closeTime();
 		this.minOrderAmount = dto.minOrderAmount();
 		this.isOperating = dto.isOperating();
+	}
+
+	// 폐업 처리 메서드 추가
+	public void close() {
+		this.isClosed = true;
+		this.isOperating = false;  // 영업 상태도 false로 변경
 	}
 }
