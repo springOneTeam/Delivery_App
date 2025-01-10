@@ -2,12 +2,13 @@ package com.example.outsourcingproject.domain.menu.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,20 +25,18 @@ import lombok.RequiredArgsConstructor;
 public class MenuController {
 
 	private final MenuService menuService;
-	// TODO 토큰
 
 	/**
 	 * 메뉴 생성 API
 	 * 권한: 본인 가게 사장님만 메뉴 생성 가능
 	 */
 	@PostMapping
+	@PreAuthorize("hasRole('OWNER')")
 	public ResponseEntity<ApiResponse<MenuResponseDto>> createMenu(
 		@PathVariable Long storeId,
 		@RequestBody MenuRequestDto requestDto,
-		@RequestHeader("userId") Long userId
+		@AuthenticationPrincipal Long userId
 	) {
-		// TODO 토큰에서 userId 추출
-
 		MenuResponseDto responseDto = menuService.createMenu(storeId, requestDto, userId);
 
 		return ResponseEntity.status(HttpStatus.CREATED)
@@ -48,14 +47,13 @@ public class MenuController {
 	 * 메뉴 수정 API
 	 */
 	@PutMapping("/{menuId}")
+	@PreAuthorize("hasRole('OWNER')")
 	public ResponseEntity<ApiResponse<MenuResponseDto>> updateMenu(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
 		@RequestBody MenuRequestDto requestDto,
-		@RequestHeader("userId") Long userId
+		@AuthenticationPrincipal Long userId
 	) {
-		// TODO 토큰에서 userId 추출
-
 		MenuResponseDto responseDto = menuService.updateMenu(storeId, menuId, requestDto, userId);
 		return ResponseEntity.ok(ApiResponse.success("메뉴가 수정되었습니다.", responseDto));
 	}
@@ -66,14 +64,13 @@ public class MenuController {
 	 * SoftDelete
 	 */
 	@DeleteMapping("/{menuId}")
+	@PreAuthorize("hasRole('OWNER')")
 	public ResponseEntity<ApiResponse<MenuResponseDto>> deleteMenu(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
-		@RequestHeader("userId") Long userId
+		@AuthenticationPrincipal Long userId
 	) {
-		// TODO 토큰에서 userId 추출
-
-		menuService.deleteMenu(storeId, menuId, userId);
-		return ResponseEntity.ok(ApiResponse.success("메뉴가 삭제되었습니다."));
+		MenuResponseDto responseDto = menuService.deleteMenu(storeId, menuId, userId);
+		return ResponseEntity.ok(ApiResponse.success("메뉴가 삭제되었습니다.", responseDto));
 	}
 }
