@@ -2,6 +2,8 @@ package com.example.outsourcingproject.domain.user.service;
 
 import org.springframework.stereotype.Service;
 
+import com.example.outsourcingproject.common.ApiResponse;
+import com.example.outsourcingproject.domain.user.dto.request.UserDeleteRequestDto;
 import com.example.outsourcingproject.domain.user.dto.request.UserLoginRequesetDto;
 import com.example.outsourcingproject.domain.user.dto.request.UserSignUpRequestDto;
 import com.example.outsourcingproject.domain.user.dto.response.UserLoginResponseDto;
@@ -10,6 +12,7 @@ import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.repository.UserRepository;
 import com.example.outsourcingproject.exception.ErrorCode;
 import com.example.outsourcingproject.exception.common.BusinessException;
+import com.example.outsourcingproject.exception.common.UserNotFoundException;
 import com.example.outsourcingproject.utils.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -49,6 +52,20 @@ public class UserService {
 		return UserLoginResponseDto.toDto(generatedToken);
 	}
 
+	/**
+	 * 회원 삭제 기능
+	 */
+	public void deleteUser(UserDeleteRequestDto requestDto, Long userId) {
+		// 비밀번호 검증
+		User foundUser = userRepository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundException("유저를 찾을 수 없습니다."));
+
+		matchPassword(requestDto.password(), foundUser.getPassword());
+
+		isDeleted(foundUser);
+	}
+
+
 	//------------------- public Methods -------------------
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
@@ -65,6 +82,13 @@ public class UserService {
 
 	private void matchPassword(String requestPassword, String storagePassword) {
 		User.matchesPassword(requestPassword, storagePassword);
+	}
+
+	private void isDeleted(User foundUser) {
+		if (foundUser.getIsDeleted()) {
+			throw new BusinessException(ErrorCode.DUPLICATE_DELETED);
+		}
+		foundUser.markAsDeleted();
 	}
 
 }
