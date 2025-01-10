@@ -74,8 +74,13 @@ public class StoreService {
 			throw new BusinessException(ErrorCode.FORBIDDEN_ACCESS, "해당 가게의 폐업 권한이 없습니다.");
 		}
 
+		// 폐업 처리
 		store.close();
-		return StoreCloseResponseDto.from(store);
+
+		// 운영 중인 가게 수 확인 - 로그 목적
+		long remainingActiveStores = storeRepository.countByOwnerAndIsOperatingTrue(store.getOwner());
+
+		return StoreCloseResponseDto.from(store, remainingActiveStores);
 	}
 
 	// getStores 메서드 수정 - 운영 중인 가게만 조회되도록
@@ -102,11 +107,12 @@ public class StoreService {
 
 
 	private void validateStoreCount(User owner) {
-		long storeCount = storeRepository.countByOwner(owner);
-		if (storeCount >= MAX_STORES_PER_OWNER) {
+		long activeStoreCount = storeRepository.countByOwnerAndIsOperatingTrue(owner);
+		if (activeStoreCount >= MAX_STORES_PER_OWNER) {
 			throw new BusinessException(ErrorCode.INVALID_ACCESS, "가게는 최대 3개까지만 등록 가능합니다.");
 		}
 	}
+
 	public Store findStoreById(Long storeId) {
 		return storeRepository.findById(storeId)
 			.orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
