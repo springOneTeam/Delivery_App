@@ -46,7 +46,7 @@ public class User {
 	@Enumerated(value = EnumType.STRING)
 	private UserRoleEnum role;
 
-	private final Boolean isDeleted = false;
+	private Boolean isDeleted = false;
 
 	public User() {
 	}
@@ -102,5 +102,9 @@ public class User {
 			throw new BusinessException(ErrorCode.LOGIN_FAILED);
 		}
 		return true;
+	}
+
+	public void markAsDeleted() {
+		this.isDeleted = true;
 	}
 }
