@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.outsourcingproject.common.ApiResponse;
 import com.example.outsourcingproject.domain.menu.dto.request.MenuRequestDto;
-import com.example.outsourcingproject.domain.menu.dto.response.DeleteMenuResponseDto;
 import com.example.outsourcingproject.domain.menu.dto.response.MenuResponseDto;
 import com.example.outsourcingproject.domain.menu.service.MenuService;
 
@@ -66,12 +65,12 @@ public class MenuController {
 	 */
 	@DeleteMapping("/{menuId}")
 	@PreAuthorize("hasRole('OWNER')")
-	public ResponseEntity<ApiResponse<DeleteMenuResponseDto>> deleteMenu(
+	public ResponseEntity<ApiResponse<MenuResponseDto>> deleteMenu(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
 		@AuthenticationPrincipal Long userId
 	) {
-		DeleteMenuResponseDto responseDto = menuService.deleteMenu(storeId, menuId, userId);
-		return ResponseEntity.ok(ApiResponse.success(responseDto.message(), responseDto));
+		MenuResponseDto responseDto = menuService.deleteMenu(storeId, menuId, userId);
+		return ResponseEntity.ok(ApiResponse.success("메뉴가 삭제되었습니다.", responseDto));
 	}
 }
