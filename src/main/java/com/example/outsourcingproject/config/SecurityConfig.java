@@ -11,6 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.outsourcingproject.filter.JwtFilter;
+import com.example.outsourcingproject.utils.AuthenticationEntryPoint;
+import com.example.outsourcingproject.utils.JwtAccessDeniedHandler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,6 +41,10 @@ public class SecurityConfig {
 		http.csrf(csrf -> csrf.disable()) // CSRF 설정 비활성화
 			.httpBasic(basic -> basic.disable())
 			.formLogin(form -> form.disable())
+			.exceptionHandling(exceptions -> exceptions
+				.authenticationEntryPoint(new AuthenticationEntryPoint()) // 인증 실패 처리
+				.accessDeniedHandler(new JwtAccessDeniedHandler()) // 권한 부족 처리
+			)
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 				.requestMatchers("/api/users/login", "/api/users/signup").permitAll() // 로그인, 회원가입 경로는 인증 없이 접근 가능
