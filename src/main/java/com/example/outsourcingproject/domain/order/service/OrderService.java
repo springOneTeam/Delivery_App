@@ -63,8 +63,6 @@ public class OrderService {
 		User user = findUserByIdOrElseThrow(userId);
 		Order order = findOrderByIdOrElseThrow(orderId);
 
-		checkUserAccess(user);
-
 		OrderStatus orderStatus = OrderStatus.from(dto.orderStatus());
 		order.setOrderStatus(orderStatus);
 
@@ -127,12 +125,6 @@ public class OrderService {
 	private static void checkMinOrderAmount(Store store, int totalAmount) {
 		if (totalAmount < store.getMinOrderAmount()) {
 			throw new BusinessException(ErrorCode.INVALID_TOTALAMOUNT);
-		}
-	}
-
-	private static void checkUserAccess(User user) {
-		if (user.getRole() != UserRoleEnum.OWNER) {
-			throw new BusinessException(ErrorCode.FORBIDDEN_ACCESS);
 		}
 	}
 }
