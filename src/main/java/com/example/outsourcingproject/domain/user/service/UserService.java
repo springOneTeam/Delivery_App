@@ -1,6 +1,5 @@
 package com.example.outsourcingproject.domain.user.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.outsourcingproject.domain.user.dto.request.UserLoginRequesetDto;
@@ -23,9 +22,7 @@ public class UserService {
 	private final JwtUtil jwtUtil;
 
 	/**
-	 * TODO :: 추후 토큰 생성 후 반환
-	 * @param requestDto
-	 * @return
+	 * 회원가입 기능
 	 */
 	public UserSignUpResponseDto signUpUser(UserSignUpRequestDto requestDto) {
 		// 비즈니스 규칙: 이메일 검증
@@ -35,18 +32,19 @@ public class UserService {
 		// 비밀번호 암호화
 		String encryptedPassword = User.generateEncryptedPassword(requestDto.password());
 
-		// 새 유저 생성
 		User newUser = User.create(requestDto.nickName(), requestDto.email(), encryptedPassword, requestDto.role());
 		User savedUser = userRepository.save(newUser);
 		return UserSignUpResponseDto.toDto(savedUser.getRole());
 	}
 
-
+	/**
+	 * 로그인 기능
+	 */
 	public UserLoginResponseDto loginUser(UserLoginRequesetDto requestDto) {
 		User foundUser = userRepository.findByEmail(requestDto.email());
-
 		// 비즈니스 규칙: 이메일이 중복되어서는 안된다.
 		matchPassword(requestDto.password(), foundUser.getPassword());
+		// 토큰 생성
 		String generatedToken = jwtUtil.generateToken(foundUser.getUserId(), foundUser.getRole().toString());
 		return UserLoginResponseDto.toDto(generatedToken);
 	}

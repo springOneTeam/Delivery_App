@@ -10,8 +10,6 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.example.outsourcingproject.domain.user.enums.UserRoleEnum;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -47,7 +45,7 @@ public class JwtUtil {
 		return extractClaims(token).get("role", String.class);
 	}
 
-	// 5. JWT 유효성 검증
+	// --------------------- public methods ---------------------
 	public boolean validateToken(String token) {
 		try {
 			return !extractClaims(token).getExpiration().before(new Date());
@@ -74,4 +72,5 @@ public class JwtUtil {
 			.parseClaimsJws(token) // JWT 파싱
 			.getBody(); // 클레임 반환
 	}
+
 }
