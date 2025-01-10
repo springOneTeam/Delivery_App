@@ -60,12 +60,13 @@ public class MenuService {
 	 * 메뉴 삭제
 	 */
 	@Transactional
-	public void deleteMenu(Long storeId, Long menuId, Long userId) {
+	public MenuResponseDto deleteMenu(Long storeId, Long menuId, Long userId) {
 		Store store = storeService.findStoreById(storeId);
 		Menu menu = findMenuById(menuId);
 		validateOwnerAccess(userId, store);
 
 		menu.delete();
+		return MenuResponseDto.fromEntity(menu);
 	}
 
 	private Menu findMenuById(Long menuId) {
