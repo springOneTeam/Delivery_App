@@ -6,7 +6,10 @@ import java.util.List;
 import com.example.outsourcingproject.domain.menu.entity.Menu;
 import com.example.outsourcingproject.domain.order.entity.Order;
 import com.example.outsourcingproject.domain.review.entity.Review;
+import com.example.outsourcingproject.domain.store.dto.StoreUpdateRequestDto;
 import com.example.outsourcingproject.domain.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -43,10 +46,10 @@ public class Store {
 	private String address;
 
 	@Column(nullable = false)
-	private LocalTime openTime;
+	private String openTime;  // LocalTime에서 String으로 변경
 
 	@Column(nullable = false)
-	private LocalTime closeTime;
+	private String closeTime;  // LocalTime에서 String으로 변경
 
 	@Column(nullable = false)
 	private int minOrderAmount;
@@ -64,18 +67,13 @@ public class Store {
 	@OneToMany(mappedBy = "store")
 	private List<Order> orders = new ArrayList<>();
 
+	@Column(nullable = false)
+	private boolean isClosed = false;  // 폐업 상태
 
 	@Builder
-	private Store(
-		User owner,
-		String storeName,
-		String tel,
-		String address,
-		LocalTime openTime,
-		LocalTime closeTime,
-		int minOrderAmount,
-		boolean isOperating
-	) {
+	public Store(User owner, String storeName, String tel, String address,
+		String openTime, String closeTime, int minOrderAmount,
+		boolean isOperating) {
 		this.owner = owner;
 		this.storeName = storeName;
 		this.tel = tel;
@@ -86,14 +84,19 @@ public class Store {
 		this.isOperating = isOperating;
 	}
 
-	// 비즈니스 로직
-	public void validateOwner(User user) {
-		if (!this.owner.equals(user)) {
-			throw new IllegalArgumentException("해당 가게의 사장님이 아닙니다.");
-		}
+	public void update(StoreUpdateRequestDto dto) {
+		this.storeName = dto.storeName();
+		this.tel = dto.tel();
+		this.address = dto.address();
+		this.openTime = dto.openTime();
+		this.closeTime = dto.closeTime();
+		this.minOrderAmount = dto.minOrderAmount();
+		this.isOperating = dto.isOperating();
 	}
 
-	public void closeStore() {
-		this.isOperating = false;
+	// 폐업 처리 메서드 추가
+	public void close() {
+		this.isClosed = true;
+		this.isOperating = false;  // 영업 상태도 false로 변경
 	}
 }

@@ -14,8 +14,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         return findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Does not exist id = " + id));
     }
 
-    List<Review> findByStoreId(Long storeId);
+    List<Review> findByStore_StoreIdOrderByCreatedAtDesc(Long storeId);
 
-    List<Review> findByStoreIdAndRatingBetween(Long storeId, int minRating, int maxRating);
+    // List<Review> findByStore_IdAndRatingBetween(Long storeId, int minRating, int maxRating);
+
+    List<Review> findByStore_StoreIdAndRatingBetweenOrderByCreatedAtDesc(Long storeId, int minRating, int maxRating);
 
 }

@@ -2,7 +2,7 @@ package com.example.outsourcingproject.domain.store.dto;
 
 import com.example.outsourcingproject.domain.store.entity.Store;
 
-public record StoreCreateResponseDto(
+public record StoreUpdateResponseDto(
 	Long storeId,
 	String storeName,
 	String tel,
@@ -12,8 +12,8 @@ public record StoreCreateResponseDto(
 	int minOrderAmount,
 	boolean isOperating
 ) {
-	public static StoreCreateResponseDto from(Store store) {
-		return new StoreCreateResponseDto(
+	public static StoreUpdateResponseDto from(Store store) {
+		return new StoreUpdateResponseDto(
 			store.getStoreId(),
 			store.getStoreName(),
 			store.getTel(),

@@ -31,7 +31,7 @@ public class MenuController {
 	public ResponseEntity<MenuResponseDto> createMenu(
 		@PathVariable Long storeId,
 		@RequestBody MenuRequestDto requestDto,
-		@RequestHeader("Authorization") String token
+		@RequestHeader("userId") Long userId
 	) {
 		// TODO 토큰에서 userId 추출
 
@@ -47,7 +47,7 @@ public class MenuController {
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
 		@RequestBody MenuRequestDto requestDto,
-		@RequestHeader("Authorization") String token
+		@RequestHeader("userId") Long userId
 	) {
 		// TODO 토큰에서 userId 추출
 
@@ -62,7 +62,7 @@ public class MenuController {
 	public ResponseEntity<Void> deleteMenu(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
-		@RequestHeader("Authorization") String token
+		@RequestHeader("userId") Long userId
 	) {
 		// TODO 토큰에서 userId 추출
 

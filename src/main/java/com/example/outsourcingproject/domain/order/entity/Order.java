@@ -27,10 +27,11 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
-@Table(name="order")
+@Table(name="orders")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 public class Order {
@@ -51,6 +52,7 @@ public class Order {
 	@JoinColumn(name = "menu_id")
 	private Menu menu;
 
+	@Setter
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
 
@@ -62,12 +64,12 @@ public class Order {
 	@Column(updatable = false)
 	private LocalDateTime ordertime;
 
-	public Order(User user, Store store, Menu menu, OrderStatus orderStatus, int cart, int totalAmount){
+	public Order(User user, Store store, Menu menu, OrderStatus orderStatus, int cart){
 		this.user=user;
 		this.store=store;
 		this.menu=menu;
 		this.orderStatus=orderStatus;
 		this.cart=cart;
-		this.totalAmount=totalAmount;
+		this.totalAmount= menu.getPrice();
 	}
 }
