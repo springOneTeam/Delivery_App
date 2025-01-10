@@ -66,7 +66,7 @@ public class MenuController {
 	 * SoftDelete
 	 */
 	@DeleteMapping("/{menuId}")
-	public ResponseEntity<ApiResponse<Void>> deleteMenu(
+	public ResponseEntity<ApiResponse<MenuResponseDto>> deleteMenu(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
 		@RequestHeader("userId") Long userId
