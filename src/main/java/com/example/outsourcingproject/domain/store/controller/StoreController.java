@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.outsourcingproject.common.ApiResponse;
+import com.example.outsourcingproject.domain.store.dto.StoreCloseResponseDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateRequestWithUserDto;
 import com.example.outsourcingproject.domain.store.dto.StoreCreateResponseDto;
@@ -79,5 +80,14 @@ public class StoreController {
 		@RequestParam(required = false) String storeName
 	) {
 		return ResponseEntity.ok(storeService.getStores(storeName));
+	}
+
+
+	@PutMapping("/{storeId}/close")
+	public ResponseEntity<ApiResponse<StoreCloseResponseDto>> closeStore(
+		@PathVariable Long storeId
+	) {
+		StoreCloseResponseDto responseDto = storeService.closeStore(storeId);
+		return ResponseEntity.ok(ApiResponse.success("가게가 성공적으로 폐업 처리되었습니다.", responseDto));
 	}
 }
