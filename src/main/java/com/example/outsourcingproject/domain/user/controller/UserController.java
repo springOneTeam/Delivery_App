@@ -17,11 +17,11 @@ import com.example.outsourcingproject.domain.user.dto.request.UserLoginRequesetD
 import com.example.outsourcingproject.domain.user.dto.request.UserSignUpRequestDto;
 import com.example.outsourcingproject.domain.user.dto.response.UserLoginResponseDto;
 import com.example.outsourcingproject.domain.user.dto.response.UserSignUpResponseDto;
+import com.example.outsourcingproject.domain.user.entity.User;
 import com.example.outsourcingproject.domain.user.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/users")
@@ -46,6 +46,7 @@ public class UserController {
 	public ResponseEntity<ApiResponse<UserLoginResponseDto>> loginUser(
 		@RequestBody UserLoginRequesetDto requestDto) {
 
+		User.validateEmail(requestDto.email());
 		UserLoginResponseDto response = userService.loginUser(requestDto);
 		return ResponseEntity.ok(ApiResponse.success("login success", response));
 	}

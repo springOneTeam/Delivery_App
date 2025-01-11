@@ -80,8 +80,11 @@ public class User {
 	}
 
 	// 이메일 형식 검증
-	private static boolean validateEmail(String email) {
-		return emailPattern.matcher(email).matches();
+	public static boolean validateEmail(String email) {
+		if(!emailPattern.matcher(email).matches()) {
+			throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "이메일 형식이 맞는지 확인하세요.");
+		}
+		return true;
 	}
 
 	// 비밀번호 형식 검증

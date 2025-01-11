@@ -55,25 +55,22 @@ public class UserService {
 	@Transactional
 	public UserLoginResponseDto loginUser(UserLoginRequesetDto requestDto) {
 		User foundUser = userRepository.findByEmail(requestDto.email());
-		// 비즈니스 규칙: 이메일이 중복되어서는 안된다.
+		isDeletedCheck(foundUser);
 		matchPassword(requestDto.password(), foundUser.getPassword());
 		// 토큰 생성
 		String generatedToken = jwtUtil.generateToken(foundUser.getUserId(), foundUser.getRole().toString());
 		return UserLoginResponseDto.toDto(generatedToken, foundUser.getRole());
 	}
 
+
 	/**
 	 * 회원 삭제 기능
 	 */
 	@Transactional
 	public void deleteUser(UserDeleteRequestDto requestDto, Long userId) {
-		// 비밀번호 검증
-		User foundUser = userRepository.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("유저를 찾을 수 없습니다."));
-
+		User foundUser = getUserById(userId);
 		matchPassword(requestDto.password(), foundUser.getPassword());
-
-		isDeleted(foundUser);
+		isDeletedCheck(foundUser);
 	}
 
 
@@ -87,7 +84,7 @@ public class UserService {
 	private void verifyEmail(String Email) {
 		User.generateEmail(Email);
 		if (userRepository.existsByEmail(Email)) {
-			throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
+			throw new BusinessException(ErrorCode.DUPLICATE_EMAIL, "다른 이메일로 재시도하시기 바랍니다.");
 		}
 	}
 
@@ -95,18 +92,10 @@ public class UserService {
 		User.matchesPassword(requestPassword, storagePassword);
 	}
 
-	private void isDeleted(User foundUser) {
-		if (foundUser.getIsDeleted()) {
-			throw new BusinessException(ErrorCode.DUPLICATE_DELETED);
+	private void isDeletedCheck(User foundUser) {
+		if(foundUser.getIsDeleted()) {
+			throw new BusinessException(ErrorCode.DUPLICATE_DELETED,"계정이 비활성화 상태입니다.");
 		}
-		foundUser.markAsDeleted();
-		// BulkDelete(foundUser.getUserId());
 	}
-
-	// private void BulkDelete(Long userId) {
-	// 	List<Store> storeList = new ArrayList<>();
-	// 	storeList = storeRepository.findAllByUserIdAndIsClosedFalse(userId);
-	// }
-
 
 }
