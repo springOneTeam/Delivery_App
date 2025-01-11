@@ -1,5 +1,7 @@
 package com.example.outsourcingproject.domain.user.controller;
 
+import java.net.URI;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +21,7 @@ import com.example.outsourcingproject.domain.user.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/users")
@@ -33,16 +36,18 @@ public class UserController {
 		@Valid @RequestBody UserSignUpRequestDto requestDto) {
 
 		UserSignUpResponseDto response = userService.signUpUser(requestDto);
-		ApiResponse apiResponse = ApiResponse.success("user created", response);
-		return new ResponseEntity<ApiResponse<UserSignUpResponseDto>>(apiResponse, HttpStatus.CREATED);
+		return ResponseEntity
+			.created(URI.create("/api/stores/" + response))
+			.body(ApiResponse.success("signup user", response));
 	}
 
 	// 로그인
 	@PostMapping("/login")
-	public ResponseEntity<ApiResponse<UserLoginResponseDto>> loginUser(@RequestBody UserLoginRequesetDto requestDto) {
+	public ResponseEntity<ApiResponse<UserLoginResponseDto>> loginUser(
+		@RequestBody UserLoginRequesetDto requestDto) {
+
 		UserLoginResponseDto response = userService.loginUser(requestDto);
-		ApiResponse apiResponse = ApiResponse.success("login success", response);
-		return new ResponseEntity<ApiResponse<UserLoginResponseDto>>(apiResponse, HttpStatus.OK);
+		return ResponseEntity.ok(ApiResponse.success("login success", response));
 	}
 
 	// 회원탈퇴
@@ -52,8 +57,7 @@ public class UserController {
 		@AuthenticationPrincipal Long userId) {
 
 		userService.deleteUser(requestDto, userId);
-		ApiResponse apiResponse = ApiResponse.success("user is deleted", null);
-		return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+		return ResponseEntity.ok(ApiResponse.success("user is deleted", null));
 	}
 
 }

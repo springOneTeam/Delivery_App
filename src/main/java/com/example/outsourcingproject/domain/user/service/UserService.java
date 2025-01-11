@@ -53,7 +53,7 @@ public class UserService {
 		matchPassword(requestDto.password(), foundUser.getPassword());
 		// 토큰 생성
 		String generatedToken = jwtUtil.generateToken(foundUser.getUserId(), foundUser.getRole().toString());
-		return UserLoginResponseDto.toDto(generatedToken);
+		return UserLoginResponseDto.toDto(generatedToken, foundUser.getRole());
 	}
 
 	/**

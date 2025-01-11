@@ -1,8 +1,10 @@
 package com.example.outsourcingproject.domain.user.dto.response;
 
-public record UserLoginResponseDto(String accessToken) {
+import com.example.outsourcingproject.domain.user.enums.UserRoleEnum;
 
-	public static UserLoginResponseDto toDto(String accessToken) {
-		return new UserLoginResponseDto(accessToken);
+public record UserLoginResponseDto(String accessToken, UserRoleEnum role) {
+
+	public static UserLoginResponseDto toDto(String accessToken, UserRoleEnum role) {
+		return new UserLoginResponseDto(accessToken, role);
 	}
 }
