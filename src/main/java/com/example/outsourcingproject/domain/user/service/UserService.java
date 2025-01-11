@@ -1,9 +1,14 @@
 package com.example.outsourcingproject.domain.user.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.outsourcingproject.common.ApiResponse;
+import com.example.outsourcingproject.domain.store.entity.Store;
+import com.example.outsourcingproject.domain.store.repository.StoreRepository;
 import com.example.outsourcingproject.domain.user.dto.request.UserDeleteRequestDto;
 import com.example.outsourcingproject.domain.user.dto.request.UserLoginRequesetDto;
 import com.example.outsourcingproject.domain.user.dto.request.UserSignUpRequestDto;
@@ -24,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final StoreRepository storeRepository;
 	private final JwtUtil jwtUtil;
 
 	/**
@@ -94,6 +100,13 @@ public class UserService {
 			throw new BusinessException(ErrorCode.DUPLICATE_DELETED);
 		}
 		foundUser.markAsDeleted();
+		// BulkDelete(foundUser.getUserId());
 	}
+
+	// private void BulkDelete(Long userId) {
+	// 	List<Store> storeList = new ArrayList<>();
+	// 	storeList = storeRepository.findAllByUserIdAndIsClosedFalse(userId);
+	// }
+
 
 }
