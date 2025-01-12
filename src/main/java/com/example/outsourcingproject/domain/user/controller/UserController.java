@@ -36,9 +36,9 @@ public class UserController {
 		@Valid @RequestBody UserSignUpRequestDto requestDto) {
 
 		UserSignUpResponseDto response = userService.signUpUser(requestDto);
-		return ResponseEntity
-			.created(URI.create("/api/stores/" + response))
-			.body(ApiResponse.success("signup user", response));
+		ApiResponse apiResponse = ApiResponse.success("User successfully signed up", response);
+		return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+
 	}
 
 	// 로그인
