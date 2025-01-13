@@ -2,7 +2,8 @@ package com.example.outsourcingproject.domain.order.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +18,10 @@ import com.example.outsourcingproject.domain.order.dto.ChangeOrderStatusResponse
 import com.example.outsourcingproject.domain.order.dto.CreateOrderRequestDto;
 import com.example.outsourcingproject.domain.order.dto.CreateOrderResponseDto;
 import com.example.outsourcingproject.domain.order.dto.OrderListResponseDto;
+import com.example.outsourcingproject.domain.order.entity.Order;
 import com.example.outsourcingproject.domain.order.service.OrderService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,38 +33,37 @@ public class OrderController {
 
 	private final OrderService orderService;
 
-	// 주문 생성
 	@PostMapping
+	@Operation(summary = "주문 생성")
 	public ResponseEntity<ApiResponse<CreateOrderResponseDto>> creatOrder(
-		HttpServletRequest request,
+		@AuthenticationPrincipal Long userId,
 		@Valid @RequestBody CreateOrderRequestDto createOrderRequestDto
 	) {
-		Long userId = (Long)request.getAttribute("userId");
 		orderService.createOrder(userId, createOrderRequestDto);
 
 		return new ResponseEntity<>(ApiResponse.success("음식을 주문했습니다."), HttpStatus.CREATED);
 	}
 
-	// 주문 상태 변경
 	@PatchMapping("/{orderId}/status")
+	@PreAuthorize("hasRole('OWNER')")
+	@Operation(summary = "주문 상태 변경", description = "사장님(OWNER) 권한을 가진 사용자만 주문 상태를 변경할 수 있습니다.")
 	public ResponseEntity<ApiResponse<ChangeOrderStatusResponseDto>> updateOrderStatus(
-		HttpServletRequest request,
+		@AuthenticationPrincipal Long userId,
 		@PathVariable Long orderId,
 		@Valid @RequestBody ChangeOrderStatusRequestDto requestDto
 	) {
-		Long userId = (Long)request.getAttribute("userId");
-		ChangeOrderStatusResponseDto responseDto = orderService.updateOrderStatus(userId, orderId, requestDto);
+		Order order = orderService.updateOrderStatus(userId, orderId, requestDto);
+		ChangeOrderStatusResponseDto responseDto = new ChangeOrderStatusResponseDto(order.getOrderStatus());
 
 		return new ResponseEntity<>(
 			ApiResponse.success("주문상태를 변경했습니다.", responseDto), HttpStatus.OK);
 	}
 
-	// 주문 내역 조회
 	@GetMapping
+	@Operation(summary = "주문 내역 조회")
 	public ResponseEntity<ApiResponse<OrderListResponseDto>> findAllOrders(
-		HttpServletRequest request
+		@AuthenticationPrincipal Long userId
 	) {
-		Long userId = (Long)request.getAttribute("userId");
 		OrderListResponseDto responseDto = orderService.findAllOrders(userId);
 
 		return new ResponseEntity<>(

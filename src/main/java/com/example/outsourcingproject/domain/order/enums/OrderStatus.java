@@ -18,7 +18,7 @@ public enum OrderStatus {
 	public static OrderStatus from(String value) {
 		try{
 			return OrderStatus.valueOf(value.toUpperCase());
-		} catch (BusinessException e){
+		} catch (IllegalArgumentException e){
 			throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "입력한 값에 오타가 없는지 확인해주세요.");
 		}
 	}

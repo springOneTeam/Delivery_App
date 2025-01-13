@@ -44,31 +44,30 @@ public class OrderService {
 	private final GlobalExceptionHandler globalExceptionHandler;
 
 	// 주문 생성
-	public void createOrder(Long userId, CreateOrderRequestDto dto) {
+	public Order createOrder(Long userId, CreateOrderRequestDto dto) {
 		Store store = findStoreByIdOrElseThrow(dto.storeId());
 		Menu menu = findMenuByIdOrElseThrow(dto.menuId());
 		User user = findUserByIdOrElseThrow(userId);
 
+		checkMenuIsDeleted(menu);
 		checkMinOrderAmount(store, menu.getPrice());
 		checkOrderTimeWithinOperatingHours(store);
 
 		Order order = new Order(user, store, menu, OrderStatus.PENDING, dto.cart());
 
-		Order saveOrder = orderRepository.save(order);
+		return orderRepository.save(order);
 	}
 
 	// 주문 상태 변경
 	@Transactional
-	public ChangeOrderStatusResponseDto updateOrderStatus(Long userId, Long orderId, ChangeOrderStatusRequestDto dto) {
+	public Order updateOrderStatus(Long userId, Long orderId, ChangeOrderStatusRequestDto dto) {
 		User user = findUserByIdOrElseThrow(userId);
 		Order order = findOrderByIdOrElseThrow(orderId);
-
-		checkUserAccess(user);
 
 		OrderStatus orderStatus = OrderStatus.from(dto.orderStatus());
 		order.setOrderStatus(orderStatus);
 
-		return new ChangeOrderStatusResponseDto(order.getOrderStatus());
+		return order;
 	}
 
 	// 주문 내역 조회
@@ -130,9 +129,9 @@ public class OrderService {
 		}
 	}
 
-	private static void checkUserAccess(User user) {
-		if (user.getRole() != UserRoleEnum.OWNER) {
-			throw new BusinessException(ErrorCode.FORBIDDEN_ACCESS);
+	private void checkMenuIsDeleted(Menu menu) {
+		if (menu.isDeleted()){
+			throw new MenuNotFoundException("메뉴를 찾을 수 없습니다. menuId: " + menu.getMenuId());
 		}
 	}
 }
