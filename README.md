@@ -1,4 +1,4 @@
-<img width="547" alt="스크린샷 2025-01-13 오전 10 23 14" src="https://github.com/user-attachments/assets/caeba053-3c8d-4074-bb24-171363ada084" /># 🚚 **아웃소싱 배달앱 프로젝트**
+# 🚚 **아웃소싱 배달앱 프로젝트**
 - `Spring Boot`를 활용한 '배달앱' 협업 프로젝트 입니다.
 - 개발기간: 25.01.07 ~ 25.01.13
 
@@ -10,14 +10,14 @@
 - 배달 완료된 주문건에 대해서 **별점**(1~5점)으로 리뷰 가능
 
 
-## 👷 **Team**
+### 👷 **Team**
 
 | 팀장  | 팀원  | 팀원  | 팀원  | 팀원  |
 |:---:|:---:|:---:|:---:|:---:|
 | 임수민 | 조민재 | 신가을 | 김신우 | 이정우 | 
 
 
-## 🔧 **기술 스택**
+### 🔧 **기술 스택**
 
 - `backend`
     - `Java`, `SpringBoot`, `gradle`, `Spring Data JPA`,  `MySQL`
@@ -28,8 +28,7 @@
 ## 🎨 **와이어 프레임**
 
 
-![wireframe](https://www.figma.com/design/yTN2yv0KwTZJHCOnrf7z3A/1%EC%A1%B0?node-id=0-1&p=f&t=scGVg0T2i6E56PJV-0)
-
+<img width="547" alt="스크린샷 2025-01-13 오전 10 23 14" src="https://github.com/user-attachments/assets/caeba053-3c8d-4074-bb24-171363ada084" />
 
 ## 📝 **ERD**
 
@@ -104,3 +103,5 @@ erDiagram
 ```
 
 ## 📄 **API 명세서**
+
+https://www.notion.so/teamsparta/c6e4a21f759e41818b421eaacd9b4c60?v=17a2dc3ef5148104a618000c924d4ac8
